@@ -15,7 +15,7 @@ var svg = d3.select("body").append("svg")
 var link = svg.selectAll(".link"),
     node = svg.selectAll(".node");
 
-d3.json("static/sampleGraph/testData1.json", function(error, json) {
+d3.json("uploads/testData1.json", function(error, json) {
   if (error) throw error;
 
   root = json;
