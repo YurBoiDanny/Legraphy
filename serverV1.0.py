@@ -42,7 +42,7 @@ def rightSidebar():
 
 @app.route("/mainPage")
 def mainPage():
-    return render_template("mainPageTemplates/mainPageV1.1.html")
+    return render_template("mainPageTemplates/mainPageV1.0.html")
 
 @app.route("/upload", methods=['GET', 'POST'])
 def upload():
