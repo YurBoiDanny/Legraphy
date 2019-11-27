@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template, url_for, redirect, flash, request
+from flask import Flask, render_template, url_for, redirect, flash, request, send_from_directory
 from werkzeug.utils import secure_filename
 
 UPLOAD_FOLDER = 'uploads'
@@ -9,7 +9,11 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 @app.route("/")
 @app.route("/mainPage")
 def mainPage():
-    return render_template("mainPageTemplates/mainPageV1.1.html")
+    return render_template("mainPageTemplates/mainPageV1.2.html")
+
+@app.route("/mainPage(2)")
+def mainPage2():
+    return render_template("mainPageTemplates/mainPageV1.2(2).html")
 
 @app.route("/upload", methods=['GET', 'POST'])
 def upload():
@@ -27,6 +31,13 @@ def upload():
 @app.route("/newSidebar")
 def newSidebar():
     return render_template("sidebar/newSidebar.html")
+
+@app.route("/uploads/<path:path>")
+def send_file(path):
+        #print('uploads', path)
+        return send_from_directory('uploads',path)
+
+
 
 if __name__ == "__main__":
     app.run(debug = True)
