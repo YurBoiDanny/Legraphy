@@ -1,0 +1,14 @@
+{% extends "baseTemplateV1.0.html" %}
+{% block bodyContent %}
+      <form action = "{{url_for('upload')}}" method = "POST" 
+         enctype = "multipart/form-data">
+         <input type = "file" name = "file" />
+         <input type = "submit"/>
+      </form>
+
+      <div class="progress">
+            <div id="progressBar" class="progress-bar" role="progressbar" aria-valuenow="0" ariavaluein="0" aria-valuemax="100" style="width: 0%;">
+                  0%
+            </div>
+      </div>
+{% endblock %}

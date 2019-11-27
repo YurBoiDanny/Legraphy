@@ -1,0 +1,80 @@
+body{
+    margin: 0%;
+    padding: 0%;
+    background-color: #203e4a;
+}
+
+.buttons{
+    margin-top: 10%;
+    height: 73vh;
+    margin-left: 40%;
+}
+
+.buttons .nav-link{
+    margin: 15px 0px;
+    position: relative;
+}
+
+.buttons .nav-link:nth-child(1){
+    margin-top: 20px;
+}
+
+.buttons .icon{
+    background-color: #46515E;
+    padding : 10px 13px;
+    color: white;
+    font-size: 1em;
+    border-radius: 20px 10px;
+    position: relative;
+    z-index: 4;
+    transition: all 400ms ease;
+}
+
+.buttons .nav-link:nth-child(1) .icon{
+    color: #ef233e;
+    background-color: #52dee5;
+}
+
+.buttons .nav-link:nth-child(2) .icon{
+    color: #00a878;
+    background-color: black;
+}
+
+.buttons .nav-link:nth-child(3) .icon{
+    color: #A0E8AF;
+    background-color: #0d5c63;
+}
+
+.buttons .nav-link:nth-child(4) .icon{
+    color: #1f0318;
+    background-color: #f2c024;
+}
+
+.buttons .icon-text{
+    position: absolute;
+    left: 10px;
+    top: -1px;
+    z-index: 0;
+    width: 0px;
+    padding: 6px 0px;
+    border-radius: 30px;
+    color: white;
+    overflow: hidden;
+    transition: all 150ms ease;
+}
+
+.buttons .nav-link:nth-child(1) .icon-text{
+    background-color: #EF233C;
+}
+
+.buttons .nav-link:nth-child(2) .icon-text{
+    background-color: black;
+    padding: 6px 0px;
+}
+.buttons .nav-link:nth-child(3) .icon-text{
+    background-color: #0d5C63;
+
+}
+.buttons .nav-link:nth-child(4) .icon-text{
+    background-color: #f2c024;
+}

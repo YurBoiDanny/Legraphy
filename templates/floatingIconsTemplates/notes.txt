@@ -1,0 +1,2 @@
+Tutorial Video Link: https://www.youtube.com/watch?v=voNazLT1-dg
+Why Icons Didn't Appear: https://www.hanselman.com/blog/WhyDoMyFontAwesomeIconsShowUpAsBlankSquares.aspx
