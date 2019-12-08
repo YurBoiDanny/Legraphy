@@ -37,7 +37,9 @@ def send_file(path):
         #print('uploads', path)
         return send_from_directory('uploads',path)
 
-
+@app.route("/development")
+def contextMenu():
+    return render_template("development/contextMenu.html")
 
 if __name__ == "__main__":
     app.run(debug = True)
