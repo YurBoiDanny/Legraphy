@@ -3,16 +3,63 @@
 <link rel="shortcut icon" href="http://youtube.local/assets/favicon.ico">
 
 <style>
+    .custom-cm{
+        background-color: #ffffff;
+        border: ipx solid #cccccc;
+        box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.1);
+        padding: 10px 0;
+        position: absolute;
+        display: none;
+        top: 0;
+        left: 0;
+        width: 200px;
+    }
 
+    .custom-cm__item{
+        cursor: pointer;
+        padding: 8px 15px;
+    }
+
+    .custom-cm__item:hover{
+        background-color: #f8f8f8;
+    }
+
+    .custom-cm__divider{
+        border-bottom: 1px  solid #eeeeee;
+        margin: 10px 0;
+    }
 </style>
 
 <body>
     <h1>Context Menu - JavaScript - dcode </h1>
     <div class="custom-cm">
-
+        <div class="custom-cm__item">Item #1</div>
+        <div class="custom-cm__item">Item #2</div>
+        <div class="custom-cm__item">Item #3</div>
+        <div class="custom-cm__divider"></div>
+        <div class="custom-cm__item">Item #4</div>
     </div>
 
-    <script>
+<script>
+    const cm = document.querySelector('.custom-cm');
+    
+    function showContextMenu(show = true)
+    {
+        cm.style.display = show ? 'block' : 'none';
+    }
 
-    </script>
+    window.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+
+        showContextMenu();
+        cm.style.top = e.y + cm.offsetHeight > window.innerHeight ? window.innerHeight - cm.offsetHeight : e.y;
+        cm.style.left = e.x + cm.offsetWidth > window.innerWidth ? window.innerWidth - cm.offsetWidth : e.x;
+        console.log('right click!')
+        console.log(e);
+    });
+
+    window.addEventListener('click',() => {
+        showContextMenu(false);
+    });
+</script>
 </body>
