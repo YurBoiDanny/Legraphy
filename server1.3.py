@@ -9,11 +9,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 @app.route("/")
 @app.route("/mainPage")
 def mainPage():
-    return render_template("mainPageTemplates/mainPageV1.2.html")
-
-@app.route("/mainPage(2)")
-def mainPage2():
-    return render_template("mainPageTemplates/mainPageV1.2(2).html")
+    return render_template("mainPageTemplates/mainPageV1.3.html")
 
 @app.route("/upload", methods=['GET', 'POST'])
 def upload():
