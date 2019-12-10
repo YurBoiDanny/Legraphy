@@ -1,0 +1,25 @@
+.custom-cm{
+    background-color: #ffffff;
+    border: ipx solid #cccccc;
+    box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.1);
+    padding: 10px 0;
+    position: fixed;
+    display: none;
+    top: 0;
+    left: 0;
+    width: 200px;
+}
+
+.custom-cm__item{
+    cursor: pointer;
+    padding: 8px 15px;
+}
+
+.custom-cm__item:hover{
+    background-color: #f8f8f8;
+}
+
+.custom-cm__divider{
+    border-bottom: 1px  solid #eeeeee;
+    margin: 10px 0;
+}

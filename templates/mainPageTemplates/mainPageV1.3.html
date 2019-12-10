@@ -1,0 +1,248 @@
+{%extends "baseTemplateV1.2.html" %}
+{% block bodyContent %}
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <div id="graphContainer">
+        <!-- Right SideBar -->
+        <div id="wrapperRightSidebar">
+            <div id="sidebar-wrapperRightSidebar">
+                <ul class="sidebar-nav">
+                    <li class="sidebar-brand">
+                        <a href="#">
+                            Details Tab
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">Link 1</a>
+                    </li>
+                    <li>
+                        <a href="#">Link 2</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Left SideBar Section -->
+        <div class="wrapper" id="screen">
+            <!-- Sidebar -->
+            <nav id="sidebar">
+                <div class="sidebar-header">
+                    <h2 style="display: inline;">
+                        <img src="{{url_for('static',filename='icons/tempLogo.jpg')}}" width="42" height="42" align="middle">
+                        Legraphy  
+                    </h2>
+                    <p style="font-size:medium; padding:10px">A Runtime Visualizer for Legacy Apps</p>
+                </div>
+        
+                <ul class="list-unstyled components">
+                    <div style="padding-left: 30px;">
+                        <h4 >
+                                <span>
+                                        <i class="material-icons">menu</i>
+                                        <span class="icon-text">Main Menu</span>
+                                </span> 
+                        </h4>                        
+                    </div>
+
+                    <li>
+                        <a data-toggle="modal" data-target="#uploadModal" href="#uploadModal" >
+                            <span>
+                                    <i class="material-icons">file_upload</i>
+                                    <span class="icon-text">Upload Data</span>
+                            </span> 
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="#layoutSubmenu" data-toggle="collapse" aria-expanded="true" class="dropdown-toggle">
+                            <span>
+                                    <i class="material-icons">layers</i>
+                                    <span class="icon-text">Layouts</span>
+                            </span>  
+                        </a>
+                        <ul class="collapse list-unstyled" id="layoutSubmenu">
+                            <li>
+                                <a href="{{url_for('mainPage')}}">
+                                    <span>
+                                            <i class="material-icons">call_split</i>
+                                            <span class="icon-text">Call Graph</span>
+                                    </span>  
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">  
+                                    <span>
+                                            <i class="material-icons">rotate_90_degrees_ccw</i>
+                                            <span class="icon-text">Causal Graph</span>
+                                    </span>  
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <span>
+                                            <i class="material-icons">grain</i>
+                                            <span class="icon-text">Clusters</span>
+                                    </span>  
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li>
+                        <a href="#storageSubmenu" data-toggle="collapse" aria-expanded="true" class="dropdown-toggle">
+                            <span>
+                                <i class="material-icons">storage</i>
+                                <span class="icon-text">Storage</span>
+                            </span>  
+                        </a>
+                        <ul class="collapse list-unstyled" id="storageSubmenu">
+                            <li>
+                                <a href="#">
+                                    <span>
+                                        <i class="material-icons">widgets</i>
+                                        <span class="icon-text">Load</span>
+                                    </span>  
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <span>
+                                        <i class="material-icons">file_download</i>
+                                        <span class="icon-text">Download</span>
+                                    </span>  
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <span>
+                                        <i class="material-icons">settings</i>
+                                        <span class="icon-text">Settings</span>
+                                    </span>  
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <span>
+                                    <i class="material-icons">contacts</i>
+                                    <span class="icon-text">Contact</span>
+                            </span>  
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <span>
+                                    <i class="material-icons">info_outline</i>
+                                    <span class="icon-text">About</span>
+                            </span>          
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+                <!-- SideBar Toggle Btn -->
+            <div id="content" style="padding-left:240px;position:fixed">
+                    <nav class="navbar navbar-expand-lg navbar-light bg-light" >
+                        <div class="container-fluid" >
+                            <div class="row">
+                                
+                                <script src="//d3js.org/d3.v3.min.js"></script>
+                                <!-- <script src="{{url_for('static', filename='sampleGraph/renderGraph.js')}}"></script> -->
+                                <script src="{{url_for('static', filename='sampleGraph/renderGraph2.js')}}"></script>
+                                <button type="button" id="sidebarCollapse" class="btn btn-info">
+                                        <i class="fas fa-align-left"></i>
+                                        <span>Toggle L.Sidebar</span>
+                                </button>
+                                <a href class="btn btn-primary" data-toggle="sidebar">Toggle R.Sidebar</a>
+                            </div>
+                        </div>
+                    </nav>
+                </div>
+        </div>
+
+        <!-- Bot Nav Bar -->
+        <div class="container fixed-bottom">
+            <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #e3f2fd;" id="botbar">
+            <!-- <a class="navbar-brand" href="#">Tools</a> -->
+            <ul class="nav justify-content-center">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#!" onclick="flash('something!')">
+                        <span>
+                            <i class="material-icons">undo</i>
+                        </span> 
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="#!">
+                        <span>
+                            <i class="material-icons">redo</i>
+                        </span> 
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="{{url_for('mainPage')}}">
+                        <span>
+                            <i class="material-icons">settings_backup_restore</i>
+                        </span> 
+                    </a>
+                </li>
+            </ul>
+            </nav>
+        </div>
+    </div>
+
+
+
+ <!-- Modals -->    
+    <!-- Upload Modal -->
+    <div class="modal fade" id="uploadModal" tabindex="-1" role="dialog" aria-labelledby="uploadModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="uploadModalLabel">Upload Runtime Data</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+                <form id="uploadForm" action = "{{url_for('upload')}}" method = "POST" enctype = "multipart/form-data">
+                    <!-- <input type = "file" name = "file" /> -->
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <label class="btn btn-info">
+                                Browse <input id="uploadFile" name="file" type="file" style="display: none;" accept=".csv,.json"/>
+                            </label>
+                        </div>
+                        <input id="uploadFilenameTF" style="height:fit-content;" type="text" class="form-control" placeholder="No File Selected" aria-label="" aria-describedby="basic-addon1" readonly/>
+                    </div>
+                </form>
+
+                <div class="progress" id="progressBarDiv" style="display: none" >
+                    <div id="progressBar" class="progress-bar" role="progressbar" aria-valuenow="0" ariavaluein="0" aria-valuemax="100" style="width: 0%;">
+                        0%
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+              <button id="uploadModalCloseBtn" type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+              <button id="uploadSubmitBtn" type="submit" class="btn btn-primary" form="uploadForm" style="display:block">Upload</button>
+              <!-- <input type = "submit" form="uploadForm" value="Upload"/> -->
+            </div>
+          </div>
+        </div>
+    </div>
+    <!-- Upload Modal End -->
+
+<!-- Modal End -->
+
+<!-- Context Menues  -->
+    <!-- Visualizer Context Menu  -->
+    <div id="custom-cm" class="custom-cm">
+        <div class="custom-cm__item">Add Node</div>
+        <div class="custom-cm__item">Add Edge</div>
+        <div class="custom-cm__item">Remove Edge/Node</div>
+        <div class="custom-cm__item">Cluster</div>
+        <div class="custom-cm__divider"></div>
+        <div class="custom-cm__item">Rest Layout</div>
+    </div>
+    <!-- Visualizer Context Menu END  -->
+<!-- Context Menues End -->
+{% endblock %}
