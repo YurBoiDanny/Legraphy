@@ -4,13 +4,19 @@ var width = screen.width,
 
 console.log(width, height);
 
+var zoom = d3.behavior.zoom()
+    .scaleExtent([1, 10])
+    .on("zoom", zoomed);
+
 var force = d3.layout.force()
     .size([width, height])
     .on("tick", tick);
 
 var svg = d3.select("body").append("svg")
     .attr("width", width)
-    .attr("height", height);
+    .attr("height", height)
+    .call(zoom)
+    .append('svg:g');
 
 var link = svg.selectAll(".link"),
     node = svg.selectAll(".node");
@@ -21,6 +27,8 @@ d3.json("uploads/testData1.json", function(error, json) {
   root = json;
   update();
 });
+
+force.drag().on("dragstart", function() { d3.event.sourceEvent.stopPropagation(); });
 
 function update() {
   var nodes = flatten(root),
@@ -104,4 +112,26 @@ function flatten(root) {
 
   recurse(root);
   return nodes;
+}
+
+function zoomed() {
+  svg.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+}
+
+function dragstarted(d) {
+  d3.event.sourceEvent.stopPropagation();
+
+  d3.select(this).classed("dragging", true);
+  force.start();
+}
+
+function dragged(d) {
+
+  d3.select(this).attr("cx", d.x = d3.event.x).attr("cy", d.y = d3.event.y);
+
+}
+
+function dragended(d) {
+
+  d3.select(this).classed("dragging", false);
 }
