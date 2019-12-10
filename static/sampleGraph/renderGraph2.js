@@ -28,7 +28,9 @@ d3.json("uploads/testData1.json", function(error, json) {
   update();
 });
 
-force.drag().on("dragstart", function() { d3.event.sourceEvent.stopPropagation(); });
+force.drag().on("dragstart", function() {
+   d3.event.sourceEvent.stopPropagation(); 
+  });
 
 function update() {
   var nodes = flatten(root),
@@ -116,6 +118,7 @@ function flatten(root) {
 
 function zoomed() {
   svg.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+  console.log(zoom.scale());
 }
 
 function dragstarted(d) {

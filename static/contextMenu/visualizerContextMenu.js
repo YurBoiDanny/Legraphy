@@ -8,7 +8,6 @@ function showContextMenu(show = true)
 
 graphSVG.addEventListener('contextmenu', (e) => {
     e.preventDefault();
-
     showContextMenu();
     cm.style["top"] = e.y + "px";
     cm.style["left"] = e.x + "px";
@@ -24,4 +23,8 @@ graphSVG.addEventListener('contextmenu', (e) => {
 
 window.addEventListener('click',() => {
     showContextMenu(false);
+});
+
+graphSVG.addEventListener("scroll", (e) =>{
+    console.log(zoom.scale())
 });
