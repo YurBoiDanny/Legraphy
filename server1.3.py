@@ -37,5 +37,9 @@ def send_file(path):
 def contextMenu():
     return render_template("development/contextMenu.html")
 
+@app.route("/mainPage(2)")
+def mainPage2():
+    return render_template("mainPageTemplates/mainPageV1.3(2).html")
+
 if __name__ == "__main__":
     app.run(debug = True)
