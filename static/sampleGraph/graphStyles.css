@@ -47,7 +47,7 @@
   }
   
   .vertex:hover {
-    stroke: #333;
+    stroke: rgb(51, 51, 51);
     opacity: 0.8;
   }
   
@@ -60,6 +60,10 @@
     stroke: rgb(180, 21, 21);
   }
 
-  svg:not(.active):not(.ctrl) {
-    cursor: crosshair;
+  .vertex text {
+    text-anchor: middle;
+    pointer-events: none;
+    font-size: 10px;
+    font-weight: bold;
+    stroke: none;
   }
