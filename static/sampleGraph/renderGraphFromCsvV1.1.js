@@ -27,13 +27,17 @@
       { source: 8, target: 9 },
       { source: 9, target: 6 }
     ];*/
+
+var gnodes = [[]] 
+var glinks = [[]]
+
 d3.csv("uploads/graph.csv", function(error, links) {
   if (error) throw error;
 
   var w = screen.width,
   h = screen.height;
   rad = 10;
-
+  glinks = links;
   var nodesByName = {};
 
   // Create nodes for each unique source and target.
@@ -44,6 +48,7 @@ d3.csv("uploads/graph.csv", function(error, links) {
 
   // Extract the array of nodes from the map by name.
   var nodes = d3.values(nodesByName);
+  gnodes = nodes;
   var lastNodeId = nodes.length;
     
   positionNodes();
@@ -147,6 +152,9 @@ d3.csv("uploads/graph.csv", function(error, links) {
       vertices.attr("transform", function(d) {
         return "translate(" + d.x + "," + d.y + ")";
       });
+
+      gnodes = nodes;
+      glinks = links;
     }
     
     function addNode() {
@@ -156,8 +164,6 @@ d3.csv("uploads/graph.csv", function(error, links) {
         var newNode = {
           x: coords[0],
           y: coords[1],
-          id: ++lastNodeId,
-          degree: 0,
         };
         nodes.push(newNode);
         restart();
@@ -173,8 +179,6 @@ d3.csv("uploads/graph.csv", function(error, links) {
         return l.source === d || l.target === d;
       });
       linksToRemove.map(function(l) {
-        l.source.degree--;
-        l.target.degree--;
         links.splice(links.indexOf(l), 1);
       });
       nodes.splice(nodes.indexOf(d), 1);
@@ -184,8 +188,6 @@ d3.csv("uploads/graph.csv", function(error, links) {
     
     function removeEdge(d, i) {
       var e = d3.event;
-      d.source.degree--;
-      d.target.degree--;
       links.splice(links.indexOf(d), 1);
       e.preventDefault();
       restart();
@@ -250,8 +252,6 @@ d3.csv("uploads/graph.csv", function(error, links) {
           return;
         }
       }
-      mousedownNode.degree++;
-      d.degree++;
       var newLink = { source: mousedownNode, target: d };
       links.push(newLink);
     }

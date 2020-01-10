@@ -59,3 +59,7 @@
     stroke-width: 2px;
     stroke: rgb(180, 21, 21);
   }
+
+  svg:not(.active):not(.ctrl) {
+    cursor: crosshair;
+  }
