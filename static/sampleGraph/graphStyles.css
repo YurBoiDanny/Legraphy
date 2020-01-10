@@ -16,14 +16,50 @@
     stroke-dasharray: 0,2 1;
   }
   
-  circle {
-    fill: #ccc;
-    stroke: #333;
-    stroke-width: 1.5px;
-  }
-  
   text {
     font: 10px sans-serif;
     pointer-events: none;
     text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
+  }
+
+  svg {
+    cursor: crosshair;
+    display: block;
+    margin: auto;
+  }
+  
+  .edge {
+    stroke: rgb(136, 136, 136);
+    stroke-width: 2px;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    cursor: default;
+  }
+  
+  .edge:hover,
+  .dragLine {
+    stroke: rgb(255, 0, 0);
+    stroke-width: 3px;
+  }
+  
+  .vertex {
+    cursor: pointer;
+  }
+  
+  .vertex:hover {
+    stroke: #333;
+    opacity: 0.8;
+  }
+  
+  .dragLine.hidden {
+    stroke-width: 0;
+  }
+  
+  line {
+    stroke-width: 2px;
+    stroke: rgb(180, 21, 21);
+  }
+
+  svg:not(.active):not(.ctrl) {
+    cursor: crosshair;
   }

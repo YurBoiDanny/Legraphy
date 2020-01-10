@@ -1,4 +1,4 @@
-{%extends "baseTemplateV1.2.html" %}
+{%extends "baseTemplateV1.3.html" %}
 {% block bodyContent %}
 <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <div id="graphContainer">
@@ -111,14 +111,23 @@
                                 </a>
                             </li>
                             <li>
-                                <a href="#">
+                                <a id="export">
                                     <span>
-                                        <i class="material-icons">settings</i>
-                                        <span class="icon-text">Settings</span>
+                                        <i class="material-icons">exit_to_app</i>
+                                        <span class="icon-text">Export as CSV</span>
                                     </span>  
                                 </a>
                             </li>
+
                         </ul>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <span>
+                                <i class="material-icons">settings</i>
+                                <span class="icon-text">Settings</span>
+                            </span>  
+                        </a>
                     </li>
                     <li>
                         <a href="#">
@@ -143,10 +152,9 @@
                     <nav class="navbar navbar-expand-lg navbar-light bg-light" >
                         <div class="container-fluid" >
                             <div class="row">
-                                
-                                <script src="//d3js.org/d3.v3.min.js"></script>
+                            
                                 <!-- <script src="{{url_for('static', filename='sampleGraph/renderGraph.js')}}"></script> -->
-                                <script src="{{url_for('static', filename='sampleGraph/renderGraphFromCsvV1.0.js')}}"></script>
+                                <script src="{{url_for('static', filename='sampleGraph/renderGraphFromCsvV1.1.js')}}"></script>
                                 <button type="button" id="sidebarCollapse" class="btn btn-info">
                                         <i class="fas fa-align-left"></i>
                                         <span>Toggle L.Sidebar</span>

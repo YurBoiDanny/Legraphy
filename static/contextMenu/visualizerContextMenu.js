@@ -17,10 +17,6 @@ graphSVG.addEventListener('contextmenu', (e) => {
     //console.log ('cm.style.top= ', cm.style, 'cm.style.left = ', cm.style.left);
 });
 
-// graphSVG.addEventListener('click',() => {
-//     showContextMenu(false);
-// });
-
 window.addEventListener('click',() => {
     showContextMenu(false);
 });

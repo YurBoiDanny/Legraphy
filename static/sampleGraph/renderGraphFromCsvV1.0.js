@@ -22,6 +22,7 @@ force.drag().on("dragstart", function() {
     d3.event.sourceEvent.stopPropagation(); 
 });
 
+var link, node, nodes;
 
 d3.csv("uploads/graph.csv", function(error, links) {
   if (error) throw error;
@@ -35,16 +36,16 @@ d3.csv("uploads/graph.csv", function(error, links) {
   });
 
   // Extract the array of nodes from the map by name.
-  var nodes = d3.values(nodesByName);
+  nodes = d3.values(nodesByName);
 
   // Create the link lines.
-  var link = svg.selectAll(".link")
+  link = svg.selectAll(".link")
       .data(links)
     .enter().append("line")
       .attr("class", "link");
 
   // Create the node circles.
-  var node = svg.selectAll(".node")
+  node = svg.selectAll(".node")
       .data(nodes)
     .enter().append("circle")
       .attr("class", "node")
@@ -58,20 +59,21 @@ d3.csv("uploads/graph.csv", function(error, links) {
       .on("tick", tick)
       .start();
 
-  function tick() {
-    link.attr("x1", function(d) { return d.source.x; })
-        .attr("y1", function(d) { return d.source.y; })
-        .attr("x2", function(d) { return d.target.x; })
-        .attr("y2", function(d) { return d.target.y; });
-
-    node.attr("cx", function(d) { return d.x; })
-        .attr("cy", function(d) { return d.y; });
-  }
-
-  function nodeByName(name) {
-    return nodesByName[name] || (nodesByName[name] = {name: name});
-  }
+      function nodeByName(name) {
+        return nodesByName[name] || (nodesByName[name] = {name: name});
+      }
 });
+
+
+function tick() {
+  link.attr("x1", function(d) { return d.source.x; })
+      .attr("y1", function(d) { return d.source.y; })
+      .attr("x2", function(d) { return d.target.x; })
+      .attr("y2", function(d) { return d.target.y; });
+
+  node.attr("cx", function(d) { return d.x; })
+      .attr("cy", function(d) { return d.y; });
+}
 
 
 
