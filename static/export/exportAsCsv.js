@@ -5,10 +5,10 @@ $(document).ready(function(){
     $("#export").click(function(){
         console.log("Button clicked!");
         alert("The export button was clicked!");
-        var tmpData = [["SN", "Name", "Contribution"],
-        [1, "Linus Torvalds", "Linux Kernel"],
-        [2, "Tim Berners-Lee", "World Wide Web"],
-        [3, "Guido van Rossum", "Python Programming"]]
+        // var tmpData = [["SN", "Name", "Contribution"],
+        // [1, "Linus Torvalds", "Linux Kernel"],
+        // [2, "Tim Berners-Lee", "World Wide Web"],
+        // [3, "Guido van Rossum", "Python Programming"]]
         console.log(gnodes);
         console.log(glinks);
         var allData = []
