@@ -7,7 +7,6 @@ d3.csv("uploads/cCode.csv", function (error, links) {
 
   var w = screen.width,
     h = screen.height;
-  rad = 10;
   glinks = links;
   var nodesByName = {};
 
@@ -55,11 +54,11 @@ d3.csv("uploads/cCode.csv", function (error, links) {
         .distance(60)
         .strength(0.95)
     )
-    .force("x", d3.forceX(w / 2).strength(0.1))
-    .force("y", d3.forceY(h / 2).strength(0.1))
+    // .force("x", d3.forceX(w / 2).strength(0.1))
+    // .force("y", d3.forceY(h / 2).strength(0.1))
+    .force("x", d3.forceX(w / 2))
+    .force("y", d3.forceY(h / 2))
     .on("tick", tick);
-
-
 
   // Create the link lines.
   var link = svg.selectAll(".link")
@@ -68,10 +67,10 @@ d3.csv("uploads/cCode.csv", function (error, links) {
     .attr("class", "link");
 
   // Create the node circles.
-  var node = svg.selectAll(".node")
-    .data(nodes)
-    .enter().append("circle")
-    .attr("class", "node")
+  // var node = svg.selectAll(".node")
+  //   .data(nodes)
+  //   .enter().append("circle")
+  //   .attr("class", "node")
 
   var labels = svg.append('svg:g').selectAll(".labels")
     .data(nodes)
@@ -90,7 +89,7 @@ d3.csv("uploads/cCode.csv", function (error, links) {
   force.force("link").links(links);
 
 
-  var colors = d3.schemeCategory10;
+  var colors = d3.schemeCategory20;
   var mousedownNode = null;
 
   d3.select("#clear-graph").on("click", clearGraph);
@@ -132,6 +131,10 @@ d3.csv("uploads/cCode.csv", function (error, links) {
       return "translate(" + d.x + "," + d.y + ")";
     });
 
+    vertices.attr("r", function(d){
+      return getNodeSize(d);
+    });
+
     labels.attr("x", function (d) { return d.x; })
       .attr("y", function (d) { return d.y - 10; });
 
@@ -145,26 +148,16 @@ d3.csv("uploads/cCode.csv", function (error, links) {
       var newNode = {
         x: coords[0],
         y: coords[1],
-        name: "NewNode"
+        name: "NewNode" + (++lastNodeId)
       }
       nodes.push(newNode);
-      labels.remove();
-      labels = svg.append('svg:g').selectAll(".labels")
-        .data(nodes)
-        .enter()
-        .append("text")
-        .text(function (d) { return d.name; })
-        .style("text-anchor", "middle")
-        .style("fill", "#532")
-        .style("font-family", "Arial")
-        .style("font-size", 12)
-        .merge(labels)
       restart();
     }
   }
 
   //d is data, i is index according to selection
   function removeNode(d, i) {
+    //d => d.index
     var e = d3.event;
     //to make ctrl-drag works for mac/osx users
     if (e.ctrlKey) return;
@@ -172,15 +165,19 @@ d3.csv("uploads/cCode.csv", function (error, links) {
       return l.source === d || l.target === d;
     });
     linksToRemove.map(function (l) {
+      l.source.weight--;
+      l.target.weight--;
       links.splice(links.indexOf(l), 1);
     });
     nodes.splice(nodes.indexOf(d), 1);
-    var deletedLabels = labels.data(force.nodes()).exit().remove();
+    
     e.preventDefault();
     restart();
   }
 
   function removeEdge(d, i) {
+    d.source.weight--;
+    d.target.weight--;
     var e = d3.event;
     links.splice(links.indexOf(d), 1);
     e.preventDefault();
@@ -246,8 +243,11 @@ d3.csv("uploads/cCode.csv", function (error, links) {
         return;
       }
     }
+    mousedownNode.weight++;
+    d.weight++;
     var newLink = { source: mousedownNode, target: d };
     links.push(newLink);
+    console.log("pushed a new link!");
   }
 
   //one response per ctrl keydown
@@ -290,11 +290,9 @@ d3.csv("uploads/cCode.csv", function (error, links) {
   //Calculates new node size and return it 
   function getNodeSize (d) {
     //code taken from ans from: https://stackoverflow.com/questions/43906686/d3-node-radius-depends-on-number-of-links-weight-property
-    d.weight = link.filter(function (l) {
-      return l.source.index == d.index || l.target.index == d.index
-    }).size();
+    //console.log("Weight =", d.weight);
     var minRadius = 5;
-    console.log("setting weight of this", d.name,"to...", minRadius + (d.weight * 2));
+    //console.log("setting weight of this", d.name,"to...", minRadius + (d.weight * 2));
     return minRadius + (d.weight * 2)
   }
 
@@ -302,6 +300,9 @@ d3.csv("uploads/cCode.csv", function (error, links) {
   //updates the graph by updating links, nodes and binding them with DOM
   //interface is defined through several events
   function restart() {
+    
+    console.log("The Restart Function has been called!");
+
     edges = edges.data(links, function (d) {
       return "v" + d.source.index + "-v" + d.target.index;
     });
@@ -322,27 +323,47 @@ d3.csv("uploads/cCode.csv", function (error, links) {
 
     edges = ed.merge(edges);
 
-    vertices = vertices.data(nodes)
+
+    vertices = vertices.data(nodes, function(d){
+      return d.index;
+    })
     vertices.exit().remove();
 
-    vertices.selectAll("text").text(function (d) {
-      return d.name;
-    });
+    // vertices.enter().selectAll(".vertex").attr("r", function(d){
+    //   return getNodeSize(d);
+    // });
+
+
 
     var ve = vertices
       .enter()
       .append("circle")
-      .attr("r", getNodeSize)
+      .attr("r", function (d) {
+        //code taken from ans from: https://stackoverflow.com/questions/43906686/d3-node-radius-depends-on-number-of-links-weight-property
+        if(d.weight){
+          return getNodeSize(d);
+        }
+        d.weight = link.filter(function (l) {
+          return l.source.index == d.index || l.target.index == d.index
+        }).size();
+        console.log("Weight =", d.weight);
+        var minRadius = 5;
+        console.log("setting weight of this", d.name,"to...", minRadius + (d.weight * 2));
+        return minRadius + (d.weight * 2)
+      })
       .attr("class", "vertex")
-      .attr("id", function (d) {
+      .attr("name", function (d) {
         return "v" + d.name;
       })
       .style("fill", function (d, i) {
-        if (d.index == 0)
-          return "#337DFF";
-        else {
-          return colors[d.index];
-        }
+        // if (d.index == 0)
+        //   return "#337DFF";
+        // else {
+        //   return colors[d.index%10];
+        // }
+        console.log ("d.index = ", d.index);
+        console.log("setting color with num...", d.index % 20);
+        return colors[d.index%20];
       })
       .on("mousedown", beginDragLine)
       .on("mouseup", endDragLine)
@@ -354,6 +375,17 @@ d3.csv("uploads/cCode.csv", function (error, links) {
 
     vertices = ve.merge(vertices);
 
+    labels = labels.data(nodes, function(d){
+      return d.index;
+    });
+    labels.exit().remove();
+    
+    var la = labels
+      .enter()
+      .append("text")
+      .text(function (d) { return d.name; })
+
+    labels = la.merge(labels);
 
     force.nodes(nodes);
     force.force("link").links(links);
