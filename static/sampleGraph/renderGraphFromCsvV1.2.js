@@ -32,7 +32,7 @@ var gnodes = [[]]
 var glinks = [[]]
 var glabels = [];
 
-d3.csv("uploads/graph.csv", function(error, links) {
+d3.csv("uploads/cCode.csv", function(error, links) {
   if (error) throw error;
 
   var w = screen.width,
