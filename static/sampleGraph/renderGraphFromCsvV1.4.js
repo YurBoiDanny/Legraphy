@@ -82,6 +82,18 @@ d3.csv("uploads/cCode.csv", function (error, links) {
     .style("font-family", "Arial")
     .style("font-size", 12);
 
+  var edgeLabels = svg.append('svg:g').selectAll(".edgeLabels")
+    .data(links)
+    .enter()
+    .append("text")
+    .attr("x", function(d){
+      return d.source.x +(d.target.x - d.source.x)/2;
+    })
+    .attr("y", function(d){
+      return d.source.y + (d.target.y - d.source.y)/2;
+    })
+    .text("label")
+
   function nodeByName(name) {
     return nodesByName[name] || (nodesByName[name] = { name: name });
   }
@@ -138,6 +150,12 @@ d3.csv("uploads/cCode.csv", function (error, links) {
     labels.attr("x", function (d) { return d.x; })
       .attr("y", function (d) { return d.y - 10; });
 
+    edgeLabels.attr("x", function(d){
+      return d.source.x +(d.target.x - d.source.x)/2;
+    })
+    .attr("y", function(d){
+      return d.source.y + (d.target.y - d.source.y)/2;
+    })
 
   }
 
@@ -289,10 +307,7 @@ d3.csv("uploads/cCode.csv", function (error, links) {
 
   //Calculates new node size and return it 
   function getNodeSize (d) {
-    //code taken from ans from: https://stackoverflow.com/questions/43906686/d3-node-radius-depends-on-number-of-links-weight-property
-    //console.log("Weight =", d.weight);
     var minRadius = 5;
-    //console.log("setting weight of this", d.name,"to...", minRadius + (d.weight * 2));
     return minRadius + (d.weight * 2)
   }
 
@@ -328,12 +343,6 @@ d3.csv("uploads/cCode.csv", function (error, links) {
       return d.index;
     })
     vertices.exit().remove();
-
-    // vertices.enter().selectAll(".vertex").attr("r", function(d){
-    //   return getNodeSize(d);
-    // });
-
-
 
     var ve = vertices
       .enter()
@@ -386,6 +395,18 @@ d3.csv("uploads/cCode.csv", function (error, links) {
       .text(function (d) { return d.name; })
 
     labels = la.merge(labels);
+
+    edgeLabels = edgeLabels.data(links, function(d){
+      return d.index;
+    })
+    
+    edgeLabels.exit().remove();
+    var el = edgeLabels
+      .enter()
+      .append("text")
+      .text("newLabel")
+    
+      edgeLabels = el.merge(edgeLabels);
 
     force.nodes(nodes);
     force.force("link").links(links);
