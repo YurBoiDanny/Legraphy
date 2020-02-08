@@ -2,9 +2,9 @@ var gnodes = [[]]
 var glinks = [[]]
 var glabels = [];
 
-d3.csv("uploads/cCode.csv", function (error, links) {
+d3.csv("uploads/test.csv", function (error, links) {
   if (error) throw error;
-
+  
   var w = screen.width,
     h = screen.height;
   glinks = links;
@@ -16,10 +16,33 @@ d3.csv("uploads/cCode.csv", function (error, links) {
     link.target = nodeByName(link.target);
   });
 
+  //Removes links with undefined nodes
+  var removeLinks = links.filter(function (l) {
+    if(l.source.name == "" || l.target.name == ""){
+      console.log(l);
+    } 
+    return l.source.name == "" || l.target.name == "";
+  });
+  removeLinks.map(function (l) {
+    links.splice(links.indexOf(l), 1);
+  });
+  
+  
+  console.log(links)
   // Extract the array of nodes from the map by name.
   var nodes = d3.values(nodesByName);
+
+  //Added this to delete with nodes without names
+  nodes.forEach(function(node,i){
+    if (node.name == ""){
+      console.log("This node does not have a name")
+      nodes.splice(i,1);
+    }
+  })
+
   gnodes = nodes;
   var lastNodeId = nodes.length;
+  console.log(nodes)
 
   positionNodes();
 
@@ -60,7 +83,7 @@ d3.csv("uploads/cCode.csv", function (error, links) {
     .force("y", d3.forceY(h / 2))
     .on("tick", tick);
 
-  // Create the link lines.
+  //Create the link lines.
   var link = svg.selectAll(".link")
     .data(links)
     .enter().append("line")
@@ -83,8 +106,9 @@ d3.csv("uploads/cCode.csv", function (error, links) {
     .style("font-size", 12);
 
   function nodeByName(name) {
-    return nodesByName[name] || (nodesByName[name] = { name: name });
+      return nodesByName[name] || (nodesByName[name] = { name: name });
   }
+
   force.nodes(nodes);
   force.force("link").links(links);
 
