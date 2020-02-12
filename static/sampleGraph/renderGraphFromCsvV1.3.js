@@ -205,6 +205,7 @@ d3.csv("uploads/test.csv", function (error, links) {
         x: coords[0],
         y: coords[1],
         name: "NewNode" + (++lastNodeId),
+        index: lastNodeId,
         r: 1
       }
       nodes.push(newNode);
@@ -408,7 +409,7 @@ d3.csv("uploads/test.csv", function (error, links) {
       })
       .attr("class", "vertex")
       .attr("name", function (d) {
-        return "v" + d.name;
+        return "vertex-" + d.name;
       })
       .style("fill", function (d, i) {
         // if (d.index == 0)
