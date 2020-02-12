@@ -4,9 +4,10 @@ var glabels = [];
 
 d3.csv("uploads/test.csv", function (error, links) {
   if (error) throw error;
-  
-  var w = screen.width,
-    h = screen.height;
+
+
+  var w = 3840,//screen.width,
+    h = 2160//screen.height;
   glinks = links;
   var nodesByName = {};
 
@@ -20,32 +21,36 @@ d3.csv("uploads/test.csv", function (error, links) {
   var removeLinks = links.filter(function (l) {
     if(l.source.name == "" || l.target.name == ""){
       console.log(l);
-    } 
+    }
     return l.source.name == "" || l.target.name == "";
   });
   removeLinks.map(function (l) {
     links.splice(links.indexOf(l), 1);
   });
-  
-  
+
+
   console.log(links)
   // Extract the array of nodes from the map by name.
   var nodes = d3.values(nodesByName);
 
-  //Added this to delete with nodes without names
+  //Added this to delete nodes without names
   nodes.forEach(function(node,i){
     if (node.name == ""){
       console.log("This node does not have a name")
       nodes.splice(i,1);
+      return
     }
+    node.r = 1;
   })
 
   gnodes = nodes;
+  actualWidth = screen.width;
+  actualHeight = screen.height;
   var lastNodeId = nodes.length;
   console.log(nodes)
 
   positionNodes();
-
+  var k = Math.sqrt(nodes.length / (actualWidth * actualHeight));
   var svg = d3
     .select("body")
     .append("svg")
@@ -67,20 +72,50 @@ d3.csv("uploads/test.csv", function (error, links) {
       "charge",
       d3
         .forceManyBody()
-        .strength(-300)
-        .distanceMax((w + h) / 2)
+        //.strength(-300)
+        .strength(function(d){
+          var newChargeStrength = -10*Math.pow(d.r,1.5)
+          // console.log("Node:", d.name,"d.r=",d.r,"with Charge =",newChargeStrength);
+
+          //var newChargeStrength = (-5)/k;
+          return newChargeStrength;
+        })
+        .distanceMax((screen.height + screen.width) / 2)
     )
+    .force(
+      'center',
+      d3.forceCenter(w/ 2, h/ 2))
     .force(
       "link",
       d3
         .forceLink()
-        .distance(60)
-        .strength(0.95)
+        //.distance(60)
+        .distance(function(d){
+          //var distance = Math.pow(d.r,0.5) * 1.5;
+          var distance;
+          if(d.source.r > d.target.r){
+            distance =d.source.r;
+          }
+          else{
+            distance = d.target.r;
+          }
+          //console.log("New distance for",d.source.name,"to",d.target.name,"is...", distance);
+          return distance;
+        })
+         //.strength(0.95)
+        .strength(0.1)
     )
+    .force('collision',d3.forceCollide().radius(function(d){
+      //console.log("Applying force collision! WITH d.r = ", d.r);
+      // return Math.pow(d.r,0.5) * 1.5;
+      return d.r*2//Math.pow(d.r,0.15);
+    }).strength(0.1))
     // .force("x", d3.forceX(w / 2).strength(0.1))
     // .force("y", d3.forceY(h / 2).strength(0.1))
-    .force("x", d3.forceX(w / 2))
-    .force("y", d3.forceY(h / 2))
+    // .force("x", d3.forceX(w / 2))
+    // .force("y", d3.forceY(h / 2))
+    .force("x", d3.forceX(k*100).strength(0.1))
+    .force("y", d3.forceY(k*100).strength(0.1))
     .on("tick", tick);
 
   //Create the link lines.
@@ -89,11 +124,6 @@ d3.csv("uploads/test.csv", function (error, links) {
     .enter().append("line")
     .attr("class", "link");
 
-  // Create the node circles.
-  // var node = svg.selectAll(".node")
-  //   .data(nodes)
-  //   .enter().append("circle")
-  //   .attr("class", "node")
 
   var labels = svg.append('svg:g').selectAll(".labels")
     .data(nodes)
@@ -154,14 +184,16 @@ d3.csv("uploads/test.csv", function (error, links) {
     vertices.attr("transform", function (d) {
       return "translate(" + d.x + "," + d.y + ")";
     });
+    // vertices.attr("cx", function(d){ return d.x})
+    //         .attr("cy", function(d){ return d.y});
 
     vertices.attr("r", function(d){
       return getNodeSize(d);
     });
 
+
     labels.attr("x", function (d) { return d.x; })
       .attr("y", function (d) { return d.y - 10; });
-
 
   }
 
@@ -172,7 +204,8 @@ d3.csv("uploads/test.csv", function (error, links) {
       var newNode = {
         x: coords[0],
         y: coords[1],
-        name: "NewNode" + (++lastNodeId)
+        name: "NewNode" + (++lastNodeId),
+        r: 1
       }
       nodes.push(newNode);
       restart();
@@ -194,7 +227,7 @@ d3.csv("uploads/test.csv", function (error, links) {
       links.splice(links.indexOf(l), 1);
     });
     nodes.splice(nodes.indexOf(d), 1);
-    
+
     e.preventDefault();
     restart();
   }
@@ -311,20 +344,16 @@ d3.csv("uploads/test.csv", function (error, links) {
     }
   }
 
-  //Calculates new node size and return it 
+  //Calculates new node size and return it
   function getNodeSize (d) {
-    //code taken from ans from: https://stackoverflow.com/questions/43906686/d3-node-radius-depends-on-number-of-links-weight-property
-    //console.log("Weight =", d.weight);
-    var minRadius = 5;
-    //console.log("setting weight of this", d.name,"to...", minRadius + (d.weight * 2));
-    return minRadius + (d.weight * 2)
+    return 5 + (d.weight * 2)
   }
 
 
   //updates the graph by updating links, nodes and binding them with DOM
   //interface is defined through several events
   function restart() {
-    
+
     console.log("The Restart Function has been called!");
 
     edges = edges.data(links, function (d) {
@@ -349,6 +378,7 @@ d3.csv("uploads/test.csv", function (error, links) {
 
 
     vertices = vertices.data(nodes, function(d){
+      //Recharge the nodes
       return d.index;
     })
     vertices.exit().remove();
@@ -364,16 +394,17 @@ d3.csv("uploads/test.csv", function (error, links) {
       .append("circle")
       .attr("r", function (d) {
         //code taken from ans from: https://stackoverflow.com/questions/43906686/d3-node-radius-depends-on-number-of-links-weight-property
-        if(d.weight){
-          return getNodeSize(d);
-        }
+        // if(d.weight){
+        //   return getNodeSize(d);
+        // }
         d.weight = link.filter(function (l) {
           return l.source.index == d.index || l.target.index == d.index
         }).size();
         console.log("Weight =", d.weight);
-        var minRadius = 5;
-        console.log("setting weight of this", d.name,"to...", minRadius + (d.weight * 2));
-        return minRadius + (d.weight * 2)
+        newRadius = 5 + (d.weight * 2);
+        d.r = newRadius;
+        console.log("setting weight of this", d.name,"to...", newRadius);
+        return newRadius
       })
       .attr("class", "vertex")
       .attr("name", function (d) {
@@ -403,16 +434,20 @@ d3.csv("uploads/test.csv", function (error, links) {
       return d.index;
     });
     labels.exit().remove();
-    
+
     var la = labels
       .enter()
       .append("text")
       .text(function (d) { return d.name; })
 
     labels = la.merge(labels);
-
     force.nodes(nodes);
     force.force("link").links(links);
+
+    d3.forceCollide().initialize(nodes);
+    force.force("link").initialize(nodes);
+    force.force("charge").initialize(nodes);
+
     force.alpha(0.8).restart();
 
 
