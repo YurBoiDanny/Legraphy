@@ -2,7 +2,8 @@ var gnodes = [[]]
 var glinks = [[]]
 var glabels = [];
 
-d3.csv("uploads/test.csv", function (error, links) {
+d3.csv("uploads/test.csv", function (error, 
+  links) {
   if (error) throw error;
 
 
@@ -11,6 +12,14 @@ d3.csv("uploads/test.csv", function (error, links) {
   glinks = links;
   var nodesByName = {};
 
+  var zoom = d3.zoom()
+  .scaleExtent([1, 100])
+  .on("zoom", zoomed);
+
+  function zoomed() {
+    svg.attr("transform", d3.event.transform)
+    //console.log("Current Zoom Multiplier:",d3.event.transform.k);
+  }
   // Create nodes for each unique source and target.
   links.forEach(function (link) {
     link.source = nodeByName(link.source);
@@ -55,7 +64,7 @@ d3.csv("uploads/test.csv", function (error, links) {
     .select("body")
     .append("svg")
     .attr("width", w)
-    .attr("height", h);
+    .attr("height", h)
 
   var dragLine = svg
     .append("path")
@@ -163,22 +172,41 @@ d3.csv("uploads/test.csv", function (error, links) {
     });
   }
 
+  //Finds the offset to place edges at the circumfrence of a target circle node
+  
+  function getOffset(d, cord, dest){
+    
+    diffX = d.target.x - d.source.x;
+    diffY = d.target.y - d.source.y;
+    // Length of path from center of source node to center of target node
+    pathLength = Math.sqrt((diffX * diffX) + (diffY * diffY));
+    // x and y distances from center to outside edge of target node
+    
+    if (cord == "x" && dest == "target") return offsetX = (diffX * d.target.r) / pathLength;
+    else if (cord == "y" && dest =="target") return offsetY = (diffY * d.target.r) / pathLength;
+    else if (cord == "x" && dest =="source") return offsetX = (-diffX * d.source.r) / pathLength;
+    else if (cord == "y" && dest =="source") return offsetY = (-diffY * d.source.r) / pathLength;
+  }
 
   //update the simulation
   function tick() {
     edges
       .attr("x1", function (d) {
-        return d.source.x;
+        return d.source.x-getOffset(d,"x","source");
       })
       .attr("y1", function (d) {
-        return d.source.y;
+        return d.source.y-getOffset(d,"y","source");
       })
       .attr("x2", function (d) {
-        return d.target.x;
+        // Total difference in x and y from source to target
+        //console.log("-getOffset(d,x) =", getOffset(d,"x"))
+        return d.target.x-getOffset(d,"x","target");
       })
       .attr("y2", function (d) {
-        return d.target.y;
+        //console.log("-getOffset(d,x) =", getOffset(d,"y"))
+        return d.target.y-getOffset(d,"y","target");
       });
+
 
     //here vertices are g.vertex elements
     vertices.attr("transform", function (d) {
@@ -220,6 +248,7 @@ d3.csv("uploads/test.csv", function (error, links) {
     //to make ctrl-drag works for mac/osx users
     if (e.ctrlKey) return;
     var linksToRemove = links.filter(function (l) {
+
       return l.source === d || l.target === d;
     });
     linksToRemove.map(function (l) {
@@ -229,7 +258,7 @@ d3.csv("uploads/test.csv", function (error, links) {
     });
     nodes.splice(nodes.indexOf(d), 1);
 
-    e.preventDefault();
+    //e.preventDefault();
     restart();
   }
 
@@ -315,6 +344,7 @@ d3.csv("uploads/test.csv", function (error, links) {
     d3.event.preventDefault();
     if (lastKeyDown !== -1) return;
     lastKeyDown = d3.event.key;
+    console.log("lastKeyDown =",lastKeyDown)
 
     if (lastKeyDown === "Control") {
       vertices.call(
@@ -335,14 +365,22 @@ d3.csv("uploads/test.csv", function (error, links) {
             d.fy = null;
           })
       );
-    }
   }
+  else if (lastKeyDown === "a"){
+    
+    svg.on("mousedown", addNode)
+  }
+}
 
   function keyup() {
     lastKeyDown = -1;
     if (d3.event.key === "Control") {
       vertices.on("mousedown.drag", null);
     }
+    else if(d3.event.key === "a"){
+      svg.on("mousedown", null)
+    }
+
   }
 
   //Calculates new node size and return it
@@ -384,20 +422,11 @@ d3.csv("uploads/test.csv", function (error, links) {
     })
     vertices.exit().remove();
 
-    // vertices.enter().selectAll(".vertex").attr("r", function(d){
-    //   return getNodeSize(d);
-    // });
-
-
-
     var ve = vertices
       .enter()
       .append("circle")
       .attr("r", function (d) {
         //code taken from ans from: https://stackoverflow.com/questions/43906686/d3-node-radius-depends-on-number-of-links-weight-property
-        // if(d.weight){
-        //   return getNodeSize(d);
-        // }
         d.weight = link.filter(function (l) {
           return l.source.index == d.index || l.target.index == d.index
         }).size();
@@ -426,7 +455,7 @@ d3.csv("uploads/test.csv", function (error, links) {
       .on("contextmenu", removeNode);
 
     ve.append("title").text(function (d) {
-      return "v" + d.name;
+      return "function: '" + d.name;
     });
 
     vertices = ve.merge(vertices);
@@ -460,13 +489,13 @@ d3.csv("uploads/test.csv", function (error, links) {
 
   //further interface
   svg
-    .on("mousedown", addNode)
     .on("mousemove", updateDragLine)
     .on("mouseup", hideDragLine)
-    .on("contextmenu", function () {
-      d3.event.preventDefault();
-    })
-    .on("mouseleave", hideDragLine);
+    // .on("contextmenu", function () {
+    //   //d3.event.preventDefault();
+    // })
+    .on("mouseleave", hideDragLine)
+    //.call(zoom);
 
   d3.select(window)
     .on("keydown", keydown)
