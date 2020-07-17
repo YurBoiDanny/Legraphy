@@ -2,13 +2,15 @@ var gnodes = [[]]
 var glinks = [[]]
 var glabels = [];
 
-d3.csv("uploads/test.csv", function (error, 
+d3.csv("uploads/test.csv", function (error,
   links) {
   if (error) throw error;
 
+  // var w = 3840,//screen.width,
+  //   h = 2160//screen.height;
 
-  var w = 3840,//screen.width,
-    h = 2160//screen.height;
+  var w = screen.width,
+    h = screen.height;
   glinks = links;
   var nodesByName = {};
 
@@ -24,6 +26,8 @@ d3.csv("uploads/test.csv", function (error,
   links.forEach(function (link) {
     link.source = nodeByName(link.source);
     link.target = nodeByName(link.target);
+    link.left = false;
+    link.right = true;
   });
 
   //Removes links with undefined nodes
@@ -53,18 +57,39 @@ d3.csv("uploads/test.csv", function (error,
   })
 
   gnodes = nodes;
-  actualWidth = screen.width;
-  actualHeight = screen.height;
+
   var lastNodeId = nodes.length;
   console.log(nodes)
 
   positionNodes();
-  var k = Math.sqrt(nodes.length / (actualWidth * actualHeight));
+  var k = Math.sqrt(nodes.length / ((w * h)/2));
   var svg = d3
     .select("body")
     .append("svg")
-    .attr("width", w)
-    .attr("height", h)
+    .attr("width", w*2)
+    .attr("height", h*2)
+
+      // define arrow markers for graph links
+  svg.append('svg:defs').append('svg:marker')
+    .attr('id', 'end-arrow')
+    .attr('viewBox', '0 -5 10 10')
+    .attr('refX', 10)
+    .attr('markerWidth', 3)
+    .attr('markerHeight', 3)
+    .attr('orient', 'auto')
+    .append('svg:path')
+    .attr('d', 'M0,-5L10,0L0,5')
+    .attr('fill', '#000');
+  svg.append('svg:defs') .append('svg:marker')
+    .attr('id', 'start-arrow')
+    .attr('viewBox', '0 -5 10 10')
+    .attr('refX', 10)
+    .attr('markerWidth', 3)
+    .attr('markerHeight', 3)
+    .attr('orient', 'auto')
+    .append('svg:path')
+    .attr('d', 'M10,-5L0,0L10,5')
+    .attr('fill', '#000');
 
   var dragLine = svg
     .append("path")
@@ -83,17 +108,17 @@ d3.csv("uploads/test.csv", function (error,
         .forceManyBody()
         //.strength(-300)
         .strength(function(d){
-          var newChargeStrength = -10*Math.pow(d.r,1.5)
+          //var newChargeStrength = -10*d.r*//Math.pow(d.r,1.5)
           // console.log("Node:", d.name,"d.r=",d.r,"with Charge =",newChargeStrength);
 
-          //var newChargeStrength = (-5)/k;
+          var newChargeStrength = (-10)/k;
           return newChargeStrength;
         })
-        .distanceMax((screen.height + screen.width) / 2)
+        //.distanceMax((screen.height + screen.width) / 2)
     )
     .force(
       'center',
-      d3.forceCenter(w/ 2, h/ 2))
+      d3.forceCenter(w, h))
     .force(
       "link",
       d3
@@ -112,19 +137,19 @@ d3.csv("uploads/test.csv", function (error,
           return distance;
         })
          //.strength(0.95)
-        .strength(0.1)
+        //.strength(0.2)
     )
     .force('collision',d3.forceCollide().radius(function(d){
       //console.log("Applying force collision! WITH d.r = ", d.r);
       // return Math.pow(d.r,0.5) * 1.5;
-      return d.r*2//Math.pow(d.r,0.15);
-    }).strength(0.1))
+      return d.r*1.5;//Math.pow(d.r,0.15);
+    }).strength(1))
     // .force("x", d3.forceX(w / 2).strength(0.1))
     // .force("y", d3.forceY(h / 2).strength(0.1))
     // .force("x", d3.forceX(w / 2))
     // .force("y", d3.forceY(h / 2))
-    .force("x", d3.forceX(k*100).strength(0.1))
-    .force("y", d3.forceY(k*100).strength(0.1))
+    .force("x", d3.forceX(k*100))//.strength(0.1))
+    .force("y", d3.forceY(k*100))//.strength(0.1))
     .on("tick", tick);
 
   //Create the link lines.
@@ -173,15 +198,15 @@ d3.csv("uploads/test.csv", function (error,
   }
 
   //Finds the offset to place edges at the circumfrence of a target circle node
-  
+
   function getOffset(d, cord, dest){
-    
+
     diffX = d.target.x - d.source.x;
     diffY = d.target.y - d.source.y;
     // Length of path from center of source node to center of target node
     pathLength = Math.sqrt((diffX * diffX) + (diffY * diffY));
     // x and y distances from center to outside edge of target node
-    
+
     if (cord == "x" && dest == "target") return offsetX = (diffX * d.target.r) / pathLength;
     else if (cord == "y" && dest =="target") return offsetY = (diffY * d.target.r) / pathLength;
     else if (cord == "x" && dest =="source") return offsetX = (-diffX * d.source.r) / pathLength;
@@ -281,6 +306,7 @@ d3.csv("uploads/test.csv", function (error,
     mousedownNode = d;
     dragLine
       .classed("hidden", false)
+      .style('marker-end', 'url(#end-arrow)')
       .attr(
         "d",
         "M" +
@@ -332,7 +358,7 @@ d3.csv("uploads/test.csv", function (error,
     }
     mousedownNode.weight++;
     d.weight++;
-    var newLink = { source: mousedownNode, target: d };
+    var newLink = { source: mousedownNode, target: d, left: false,  right: true };
     links.push(newLink);
     console.log("pushed a new link!");
   }
@@ -367,7 +393,7 @@ d3.csv("uploads/test.csv", function (error,
       );
   }
   else if (lastKeyDown === "a"){
-    
+
     svg.on("mousedown", addNode)
   }
 }
@@ -385,7 +411,8 @@ d3.csv("uploads/test.csv", function (error,
 
   //Calculates new node size and return it
   function getNodeSize (d) {
-    return 5 + (d.weight * 2)
+    //return 5 + (d.weight * 2);
+    return 5+(Math.pow(d.weight,1.3));
   }
 
 
@@ -393,17 +420,27 @@ d3.csv("uploads/test.csv", function (error,
   //interface is defined through several events
   function restart() {
 
-    console.log("The Restart Function has been called!");
+    //console.log("The Restart Function has been called!");
 
     edges = edges.data(links, function (d) {
       return "v" + d.source.index + "-v" + d.target.index;
     });
+
+    // update existing links
+    // edges.classed('selected', (d) => d === selectedLink)
+    edges
+      .style('marker-start', (d) => d.left ? 'url(#start-arrow)' : '')
+      .style('marker-end', (d) => d.right ? 'url(#end-arrow)' : '');
+
     edges.exit().remove();
 
     var ed = edges
       .enter()
       .append("line")
       .attr("class", "edge")
+      // .classed('selected', (d) => d === selectedLink)
+      .style('marker-start', (d) => d.left ? 'url(#start-arrow)' : '')
+      .style('marker-end', (d) => d.right ? 'url(#end-arrow)' : '')
       .on("mousedown", function () {
         d3.event.stopPropagation();
       })
@@ -426,12 +463,11 @@ d3.csv("uploads/test.csv", function (error,
       .enter()
       .append("circle")
       .attr("r", function (d) {
-        //code taken from ans from: https://stackoverflow.com/questions/43906686/d3-node-radius-depends-on-number-of-links-weight-property
         d.weight = link.filter(function (l) {
           return l.source.index == d.index || l.target.index == d.index
         }).size();
         console.log("Weight =", d.weight);
-        newRadius = 5 + (d.weight * 2);
+        newRadius =5+(Math.pow(d.weight,1.3));
         d.r = newRadius;
         console.log("setting weight of this", d.name,"to...", newRadius);
         return newRadius
