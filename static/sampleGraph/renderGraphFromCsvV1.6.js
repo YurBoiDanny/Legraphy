@@ -232,25 +232,20 @@ d3.csv("uploads/test.csv", function (error, links) {
         labels.attr("x", function (d) { return d.x; })
             .attr("y", function (d) { return d.y; });
 
-        // edgeLabels.attr("x", function (d) {
-        //     if(d.source.x<d.target.x)
-        //         return (d.target.x+(d.source.x-d.target.x)/2);
-        //     else
-        //         return (d.source.x +(d.target.x - d.source.x)/2);
-        // })
-        // .attr("y", function (d) {
-        //     if(d.source.y<d.target.y)
-        //         return (d.target.y+(d.source.y-d.target.y)/2);
-        //     else
-        //         return (d.source.y + (d.target.y - d.source.y)/2);
+        edgeLabels.attr("x", function (d) {
+            if(d.source.x<d.target.x)
+                return (d.target.x+(d.source.x-d.target.x)/2);
+            else
+                return (d.source.x +(d.target.x - d.source.x)/2);
+        })
+        .attr("y", function (d) {
+            if(d.source.y<d.target.y)
+                return (d.target.y+(d.source.y-d.target.y)/2);
+            else
+                return (d.source.y + (d.target.y - d.source.y)/2);
 
-        //     })
-        edgeLabels.attr("x", function(d){
-            return (d.source.x +(d.target.x - d.source.x))/2;
-          })
-          .attr("y", function(d){
-            return (d.source.y + (d.target.y - d.source.y))/2;
-          })
+            })
+
 
     }
 
@@ -415,7 +410,7 @@ d3.csv("uploads/test.csv", function (error, links) {
     //Calculates new node size and return it
     function getNodeSize(d) {
         //return 5 + (d.weight * 2);
-        return 12.5+ (Math.pow(d.weight, 1.3));
+        return 10 + (Math.pow(d.weight, 1.3));
     }
 
 
