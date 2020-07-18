@@ -215,8 +215,11 @@ d3.csv("uploads/test.csv", function (error,
 
   //update the simulation
   function tick() {
-    edges
-      .attr("x1", function (d) {
+    vertices.attr("r", function(d){
+      return getNodeSize(d);
+    });
+
+    edges.attr("x1", function (d) {
         return d.source.x-getOffset(d,"x","source");
       })
       .attr("y1", function (d) {
@@ -232,7 +235,6 @@ d3.csv("uploads/test.csv", function (error,
         return d.target.y-getOffset(d,"y","target");
       });
 
-
     //here vertices are g.vertex elements
     vertices.attr("transform", function (d) {
       return "translate(" + d.x + "," + d.y + ")";
@@ -240,9 +242,7 @@ d3.csv("uploads/test.csv", function (error,
     // vertices.attr("cx", function(d){ return d.x})
     //         .attr("cy", function(d){ return d.y});
 
-    vertices.attr("r", function(d){
-      return getNodeSize(d);
-    });
+
 
 
     labels.attr("x", function (d) { return d.x; })
@@ -393,7 +393,6 @@ d3.csv("uploads/test.csv", function (error,
       );
   }
   else if (lastKeyDown === "a"){
-
     svg.on("mousedown", addNode)
   }
 }
@@ -428,9 +427,9 @@ d3.csv("uploads/test.csv", function (error,
 
     // update existing links
     // edges.classed('selected', (d) => d === selectedLink)
-    edges
-      .style('marker-start', (d) => d.left ? 'url(#start-arrow)' : '')
-      .style('marker-end', (d) => d.right ? 'url(#end-arrow)' : '');
+    // edges
+    //   .style('marker-start', (d) => d.left ? 'url(#start-arrow)' : '')
+    //   .style('marker-end', (d) => d.right ? 'url(#end-arrow)' : '');
 
     edges.exit().remove();
 
@@ -439,8 +438,8 @@ d3.csv("uploads/test.csv", function (error,
       .append("line")
       .attr("class", "edge")
       // .classed('selected', (d) => d === selectedLink)
-      .style('marker-start', (d) => d.left ? 'url(#start-arrow)' : '')
-      .style('marker-end', (d) => d.right ? 'url(#end-arrow)' : '')
+      // .style('marker-start', (d) => d.left ? 'url(#start-arrow)' : '')
+      // .style('marker-end', (d) => d.right ? 'url(#end-arrow)' : '')
       .on("mousedown", function () {
         d3.event.stopPropagation();
       })
@@ -467,10 +466,10 @@ d3.csv("uploads/test.csv", function (error,
           return l.source.index == d.index || l.target.index == d.index
         }).size();
         console.log("Weight =", d.weight);
-        newRadius =5+(Math.pow(d.weight,1.3));
-        d.r = newRadius;
-        console.log("setting weight of this", d.name,"to...", newRadius);
-        return newRadius
+        //newRadius =5+(Math.pow(d.weight,1.3));
+        d.r = getNodeSize(d);
+        console.log("setting weight of this", d.name,"to...", d.r);
+        return d.r
       })
       .attr("class", "vertex")
       .attr("name", function (d) {
@@ -510,9 +509,9 @@ d3.csv("uploads/test.csv", function (error,
     force.nodes(nodes);
     force.force("link").links(links);
 
-    d3.forceCollide().initialize(nodes);
+    //d3.forceCollide().initialize(nodes);
     force.force("link").initialize(nodes);
-    force.force("charge").initialize(nodes);
+   // force.force("charge").initialize(nodes);
 
     force.alpha(0.8).restart();
 
@@ -530,7 +529,7 @@ d3.csv("uploads/test.csv", function (error,
     // .on("contextmenu", function () {
     //   //d3.event.preventDefault();
     // })
-    .on("mouseleave", hideDragLine)
+    //.on("mouseleave", hideDragLine)
     //.call(zoom);
 
   d3.select(window)
