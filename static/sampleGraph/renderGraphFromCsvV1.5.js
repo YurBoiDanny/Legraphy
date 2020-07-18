@@ -40,6 +40,8 @@ d3.csv("uploads/cCode.csv", function (error, links) {
 
   var edgeLabels = svg.append("g").selectAll(".edgeLabels")
 
+  var labels = svg.append('svg:g').selectAll(".labels")
+
 
   var force = d3
     .forceSimulation()
@@ -69,42 +71,7 @@ d3.csv("uploads/cCode.csv", function (error, links) {
     .enter().append("line")
     .attr("class", "link");
 
-  // Create the node circles.
-  // var node = svg.selectAll(".node")
-  //   .data(nodes)
-  //   .enter().append("circle")
-  //   .attr("class", "node")
 
-  var labels = svg.append('svg:g').selectAll(".labels")
-    .data(nodes)
-    .enter()
-    .append("text")
-    .text(function (d) { return d.name; })
-    .style("text-anchor", "middle")
-    .style("fill", "#532")
-    .style("font-family", "Arial")
-    .style("font-size", 12)
-    // .on("mouseover", function() {
-    //   d3.select(this).style("fill", "red");
-    // })
-    // .on("mouseout", function() {
-    //   d3.select(this).style("fill", null);
-    // });
-    // .call(make_editable,"labels");
-
-  //var edgeLabels = svg.append('svg:g').selectAll(".edgeLabels")
-    // .data(links)
-    // .enter()
-    // .append("text")
-    // .attr("x", function(d){
-    //   return d.source.x +(d.target.x - d.source.x)/2;
-    // })
-    // .attr("y", function(d){
-    //   return d.source.y + (d.target.y - d.source.y)/2;
-    // })
-    // .text("label");
-    //.call(make_editable,"edgeLabels");
-    
 
   function nodeByName(name) {
     return nodesByName[name] || (nodesByName[name] = { name: name });
@@ -404,7 +371,10 @@ d3.csv("uploads/cCode.csv", function (error, links) {
     var la = labels
       .enter()
       .append("text")
+      .attr("class", "nodeLabels")
       .text(function (d) { return d.name; })
+      .call(make_editable,"nodeLabels");
+
 
     labels = la.merge(labels);
 
@@ -417,92 +387,11 @@ d3.csv("uploads/cCode.csv", function (error, links) {
       .enter()
       .append("text")
       .attr("class", "edgeLabel")
-      .text("dataLabel")
-      // .call(make_editable,"edgeLabel")
-      .on("mouseover", function() {
-        d3.select(this).style("fill", "red");
+      .text(function (d){
+        if(d.name) return d.name;
+        else return "dataLabel";
       })
-      .on("mouseout", function() {
-        d3.select(this).style("fill", null);
-      })
-      .on("click", function(d, field) {
-        var p = this.parentNode;
-        console.log(this, arguments);
-
-        // inject a HTML form to edit the content here...
-
-        // bug in the getBBox logic here, but don't know what I've done wrong here;
-        // anyhow, the coordinates are completely off & wrong. :-((
-        var xy = this.getBBox();
-        var p_xy = p.getBBox();
-
-        xy.x -= p_xy.x;
-        xy.y -= p_xy.y;
-
-        var el = d3.select(this);
-        var p_el = d3.select(p);
-
-        var frm = p_el.append("foreignObject");
-
-        var inp = frm
-            .attr("x", d.source.x +(d.target.x - d.source.x)/2)
-            .attr("y", d.source.y +(d.target.y - d.source.y)/2)
-            .attr("width", 300)
-            .attr("height", 25)
-            .append("xhtml:form")
-                    .append("input")
-                        .attr("value", function() {
-                            // nasty spot to place this call, but here we are sure that the <input> tag is available
-                            // and is handily pointed at by 'this':
-                            this.focus();
-
-                            //return d[field];
-                            return el.text();
-                        })
-                        .attr("style", "width: 294px;")
-                        // make the form go away when you jump out (form looses focus) or hit ENTER:
-                        .on("blur", function() {
-                            console.log("blur", this, arguments);
-
-                            var txt = inp.node().value;
-                            //var txt = el.text();
-                            console.log("txt = ",txt);
-
-                            d[field] = txt;
-                            el
-                                .text(function(d) { return d[field]; });
-
-                            // Note to self: frm.remove() will remove the entire <g> group! Remember the D3 selection logic!
-                            p_el.select("foreignObject").remove();
-                        })
-                        .on("keypress", function() {
-                            console.log("keypress", this, arguments);
-
-                            // IE fix
-                            if (!d3.event)
-                                d3.event = window.event;
-
-                            var e = d3.event;
-                            if (e.keyCode == 13)
-                            {
-                                if (typeof(e.cancelBubble) !== 'undefined') // IE
-                                  e.cancelBubble = true;
-                                if (e.stopPropagation)
-                                  e.stopPropagation();
-                                e.preventDefault();
-
-                                var txt = inp.node().value;
-
-                                d[field] = txt;
-                                el
-                                    .text(function(d) { return d[field]; });
-
-                                // odd. Should work in Safari, but the debugger crashes on this instead.
-                                // Anyway, it SHOULD be here and it doesn't hurt otherwise.
-                                p_el.select("foreignObject").remove();
-                            }
-                        });
-      });
+      .call(make_editable,"edgeLabel");
   
     
     edgeLabels = el.merge(edgeLabels);
@@ -521,28 +410,29 @@ d3.csv("uploads/cCode.csv", function (error, links) {
   //This code makes the text attribute elements become editable
   //Code source:http://bl.ocks.org/GerHobbelt/2653660
   function make_editable(d, field){
-    console.log("make_editable", arguments);
+    //console.log("make_editable", arguments);
 
     d
       .on("mouseover", function() {
         d3.select(this).style("fill", "red");
+        svg.on("mousedown", null)
+        svg.on("mouseup", null)
+        //console.log("NULLIFY!!!!");
       })
       .on("mouseout", function() {
+        svg.on("mousedown", addNode)
+        svg.on("mouseup", hideDragLine)
         d3.select(this).style("fill", null);
       })
       .on("click", function(d) {
+        svg.on("mousedown", null)
+        svg.on("mouseup", null)
+        svg.on("keydown", null);
+        svg.on("keyup", null);
         var p = this.parentNode;
-        console.log(this, arguments);
 
-        // inject a HTML form to edit the content here...
-
-        // bug in the getBBox logic here, but don't know what I've done wrong here;
-        // anyhow, the coordinates are completely off & wrong. :-((
-        var xy = this.getBBox();
-        var p_xy = p.getBBox();
-
-        xy.x -= p_xy.x;
-        xy.y -= p_xy.y;
+        //console.log(this, arguments);
+        //console.log(this);
 
         var el = d3.select(this);
         var p_el = d3.select(p);
@@ -550,10 +440,13 @@ d3.csv("uploads/cCode.csv", function (error, links) {
         var frm = p_el.append("foreignObject");
 
         var inp = frm
-            .attr("x", xy.x)
-            .attr("y", xy.y)
-            .attr("width", 300)
-            .attr("height", 25)
+            // .attr("x", d.source.x +(d.target.x - d.source.x)/2)
+            // .attr("y", d.source.y +(d.target.y - d.source.y)/2)
+            .attr("x", el.attr("x"))
+            .attr("y", el.attr("y"))
+            .attr("width", 150)
+            .attr("height", 12)
+            .style("font", "6px times")
             .append("xhtml:form")
                     .append("input")
                         .attr("value", function() {
@@ -561,12 +454,12 @@ d3.csv("uploads/cCode.csv", function (error, links) {
                             // and is handily pointed at by 'this':
                             this.focus();
 
-                            return d[field];
+                            return el.text();
                         })
-                        .attr("style", "width: 294px;")
+                        .attr("style", "width: auto;")
                         // make the form go away when you jump out (form looses focus) or hit ENTER:
                         .on("blur", function() {
-                            console.log("blur", this, arguments);
+                            //console.log("blur", this, arguments);
 
                             var txt = inp.node().value;
 
@@ -596,12 +489,12 @@ d3.csv("uploads/cCode.csv", function (error, links) {
                                 var txt = inp.node().value;
 
                                 d[field] = txt;
-                                el
-                                    .text(function(d) { return d[field]; });
+                                el.text(function(d) { return d[field]; });
 
-                                // odd. Should work in Safari, but the debugger crashes on this instead.
-                                // Anyway, it SHOULD be here and it doesn't hurt otherwise.
                                 p_el.select("foreignObject").remove();
+
+                                svg.on("keydown", keydown);
+                                svg.on("keyup", keyup);
                             }
                         });
       });
@@ -616,11 +509,11 @@ d3.csv("uploads/cCode.csv", function (error, links) {
     // .on("contextmenu", function () {
     //   d3.event.preventDefault();
     // })
-    .on("mouseleave", hideDragLine);
+    //.on("mouseleave", hideDragLine);
 
   d3.select(window)
-    .on("keydown", keydown)
-    .on("keyup", keyup)
+    //   .on("keydown", keydown)
+    //  .on("keyup", keyup)
   restart();
 
 });

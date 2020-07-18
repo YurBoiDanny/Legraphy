@@ -421,13 +421,13 @@ d3.csv("uploads/cCode.csv", function (error, links) {
 
   //further interface
   svg
-    .on("mousedown", addNode)
-    .on("mousemove", updateDragLine)
-    .on("mouseup", hideDragLine)
+    //.on("mousedown", addNode)
+    //.on("mousemove", updateDragLine)
+    //.on("mouseup", hideDragLine)
     .on("contextmenu", function () {
       d3.event.preventDefault();
     })
-    .on("mouseleave", hideDragLine);
+    //.on("mouseleave", hideDragLine);
 
   d3.select(window)
     .on("keydown", keydown)
