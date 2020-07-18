@@ -215,9 +215,6 @@ d3.csv("uploads/test.csv", function (error,
 
   //update the simulation
   function tick() {
-    vertices.attr("r", function(d){
-      return getNodeSize(d);
-    });
 
     edges.attr("x1", function (d) {
         return d.source.x-getOffset(d,"x","source");
@@ -243,6 +240,10 @@ d3.csv("uploads/test.csv", function (error,
     //         .attr("cy", function(d){ return d.y});
 
 
+    vertices.attr("r", function(d){
+      d.r = getNodeSize(d)
+      return d.r;
+    });
 
 
     labels.attr("x", function (d) { return d.x; })
@@ -438,12 +439,13 @@ d3.csv("uploads/test.csv", function (error,
       .append("line")
       .attr("class", "edge")
       // .classed('selected', (d) => d === selectedLink)
-      // .style('marker-start', (d) => d.left ? 'url(#start-arrow)' : '')
-      // .style('marker-end', (d) => d.right ? 'url(#end-arrow)' : '')
+      .style('marker-start', (d) => d.left ? 'url(#start-arrow)' : '')
+      .style('marker-end', (d) => d.right ? 'url(#end-arrow)' : '')
       .on("mousedown", function () {
         d3.event.stopPropagation();
       })
-      .on("contextmenu", removeEdge);
+      .on("contextmenu", removeEdge)
+      
 
     ed.append("title").text(function (d) {
       return "v" + d.source.index + "-v" + d.target.index;
