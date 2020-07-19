@@ -22,7 +22,6 @@ d3.csv("uploads/test.csv", function (error, links) {
         svg.attr("transform", currentTransform);
         slider.property("value", currentTransform.k);
     }
-    console.log(zoom.scaleExtent()[0], zoom.scaleExtent()[1]);
 
     var slider = d3.select("#botNavBarZoomSlider").append("p").append("input")
     .datum({})
@@ -36,6 +35,19 @@ d3.csv("uploads/test.csv", function (error, links) {
     function slided(d) {
         zoom.scaleTo(svg, d3.select(this).property("value"));
     }
+
+    var drag = d3.drag()
+        .subject(function(d){return d;})
+        .on("start",function startdrag(d){
+            d3.event.sourceEvent.stopPropagation();
+            d3.select(this).classed("dragging",true);
+        })
+        .on("drag", function dragged(d){
+            d3.select(this).attr("cx",d.x = d3.event.x).attr("cy", d.y = d3.event.y);
+        })
+        .on("end", function endOfDrag(d){
+            d3.select(this).classed("dragging", false);
+        });
 
 
     // Create nodes for each unique source and target.
@@ -84,6 +96,8 @@ d3.csv("uploads/test.csv", function (error, links) {
         .append("svg")
         .attr("width", w * 2)
         .attr("height", h * 2)
+        .call(zoom)
+        .append("g")
 
     // define arrow markers for graph links
     svg.append('svg:defs').append('svg:marker')
@@ -665,6 +679,9 @@ d3.csv("uploads/test.csv", function (error, links) {
 
 //---------------------------further interface------------------------------------------------
     svg
+        //.call(drag)
+        //.call(zoom);
+
         // .on("mousemove", updateDragLine)
         // .on("mouseup", hideDragLine)
     // .on("contextmenu", function () {
@@ -678,6 +695,7 @@ d3.csv("uploads/test.csv", function (error, links) {
     // })
     //.on("mouseleave", hideDragLine)
     //.call(zoom);
+    
 
     //Interface with Context Menu
     d3.select("#contextEditOption")
