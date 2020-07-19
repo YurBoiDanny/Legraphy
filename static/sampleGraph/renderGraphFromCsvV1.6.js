@@ -13,14 +13,30 @@ d3.csv("uploads/test.csv", function (error, links) {
     glinks = links;
     var nodesByName = {};
 
-    //   var zoom = d3.zoom()
-    //   .scaleExtent([1, 200])
-    //   .on("zoom", zoomed);
+    var zoom = d3.zoom()
+    .scaleExtent([1, 10])
+    .on("zoom", zoomed);
 
-    // function zoomed() {
-    //     svg.attr("transform", d3.event.transform)
-    //     //console.log("Current Zoom Multiplier:",d3.event.transform.k);
-    // }
+    function zoomed() {
+        const currentTransform = d3.event.transform;
+        svg.attr("transform", currentTransform);
+        slider.property("value", currentTransform.k);
+    }
+    console.log(zoom.scaleExtent()[0], zoom.scaleExtent()[1]);
+
+    var slider = d3.select("#botNavBarZoomSlider").append("p").append("input")
+    .datum({})
+    .attr("type", "range")
+    .attr("value", zoom.scaleExtent()[0])
+    .attr("min", zoom.scaleExtent()[0])
+    .attr("max", zoom.scaleExtent()[1])
+    .attr("step", (zoom.scaleExtent()[1] - zoom.scaleExtent()[0]) / 100)
+    .on("input", slided);
+
+    function slided(d) {
+        zoom.scaleTo(svg, d3.select(this).property("value"));
+    }
+
 
     // Create nodes for each unique source and target.
     links.forEach(function (link) {
@@ -652,7 +668,13 @@ d3.csv("uploads/test.csv", function (error, links) {
         // .on("mousemove", updateDragLine)
         // .on("mouseup", hideDragLine)
     // .on("contextmenu", function () {
-    //   //d3.event.preventDefault();
+    //   d3.event.preventDefault();
+    // //   var cm = d3.select("#custom-cm");
+    // //   const show = cm.style('display') ==='none';
+    // //   if(show)
+    // //     cm.style('display','block');
+    // //   else
+    // //     cm.style('display','none');
     // })
     //.on("mouseleave", hideDragLine)
     //.call(zoom);
@@ -706,8 +728,6 @@ d3.csv("uploads/test.csv", function (error, links) {
     d3.select("#navLinkFullscreen")
         .on("click",function(){
             console.log("Fullscreen button pressed!");
-            force().stop();
-            zoomFit(0.95, 500)
         })
 
 

@@ -11,6 +11,7 @@ graphSVG.addEventListener('contextmenu', (e) => {
     showContextMenu();
     cm.style["top"] = e.y + "px";
     cm.style["left"] = e.x + "px";
+    cm.style.zIndex = 100;
     console.log('right click!')
     console.log(e);
     //console.log ('e.y = ', e.y, 'and e.x = ', e.x);
