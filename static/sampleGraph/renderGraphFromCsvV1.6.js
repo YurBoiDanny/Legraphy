@@ -416,7 +416,7 @@ d3.csv("uploads/test.csv", function (error, links) {
     }
 
 //updates the graph by updating links, nodes and binding them with DOM
-    function restart(first) {
+    function restart() {
         //console.log("The Restart Function has been called!");
 
         edges = edges.data(links, function (d) {
@@ -521,27 +521,10 @@ d3.csv("uploads/test.csv", function (error, links) {
         force.nodes(nodes);
         force.force("link").links(links);
         force.alpha(0.8).restart();
-        
-        if(first)
-        {
-            lapsedZoomFit(undefined,0);
-        }
 
         gnodes = nodes;
         glinks = links;
         glabels = labels;
-    }
-
-    function resize(){
-        var width = window.innerWidth,
-            height = window.innerHeight;
-        console.log("Resize", force.size(), [width, height]);
-        force.size([width, height]).resume();
-        lapsedZoomFit(5, 0); 
-    }
-
-    function lapsedZoomFit(){
-
     }
 //-----------------------------END of Graph Interface & Update Functions-----------------------------
 
@@ -731,7 +714,6 @@ d3.csv("uploads/test.csv", function (error, links) {
     d3.select(window)
         // .on("keydown", keydown)
         // .on("keyup", keyup)
-        .on('resize', resize);
-    restart(true);
+    restart();
 //---------------------------END of further interface-----------------------------------------
 });
