@@ -17,10 +17,11 @@ d3.csv("uploads/test.csv", function (error, links) {
     //   .scaleExtent([1, 200])
     //   .on("zoom", zoomed);
 
-    function zoomed() {
-        svg.attr("transform", d3.event.transform)
-        //console.log("Current Zoom Multiplier:",d3.event.transform.k);
-    }
+    // function zoomed() {
+    //     svg.attr("transform", d3.event.transform)
+    //     //console.log("Current Zoom Multiplier:",d3.event.transform.k);
+    // }
+
     // Create nodes for each unique source and target.
     links.forEach(function (link) {
         link.source = nodeByName(link.source);
@@ -175,8 +176,9 @@ d3.csv("uploads/test.csv", function (error, links) {
         });
     }
 
-    //Finds the offset to place edges at the circumfrence of a target circle node
+//-----------------------------Graph Interface & Update Functions-----------------------------
 
+    //Finds the offset to place edges at the circumfrence of a target circle node
     function getOffset(d, cord, dest) {
 
         diffX = d.target.x - d.source.x;
@@ -413,10 +415,8 @@ d3.csv("uploads/test.csv", function (error, links) {
         return 10 + (Math.pow(d.weight, 1.3));
     }
 
-
-    //updates the graph by updating links, nodes and binding them with DOM
-    //interface is defined through several events
-    function restart() {
+//updates the graph by updating links, nodes and binding them with DOM
+    function restart(first) {
         //console.log("The Restart Function has been called!");
 
         edges = edges.data(links, function (d) {
@@ -521,13 +521,32 @@ d3.csv("uploads/test.csv", function (error, links) {
         force.nodes(nodes);
         force.force("link").links(links);
         force.alpha(0.8).restart();
+        
+        if(first)
+        {
+            lapsedZoomFit(undefined,0);
+        }
 
         gnodes = nodes;
         glinks = links;
         glabels = labels;
     }
 
-    //Property modifcation functions
+    function resize(){
+        var width = window.innerWidth,
+            height = window.innerHeight;
+        console.log("Resize", force.size(), [width, height]);
+        force.size([width, height]).resume();
+        lapsedZoomFit(5, 0); 
+    }
+
+    function lapsedZoomFit(){
+
+    }
+//-----------------------------END of Graph Interface & Update Functions-----------------------------
+
+
+//---------------------------DOM Property modifcation functions---------------------------
     function make_labels_editable(d, field){
         //console.log("make_editable", arguments);
     
@@ -605,7 +624,7 @@ d3.csv("uploads/test.csv", function (error, links) {
                                 }
                             });
           });
-      }
+    }
     
     function make_labels_uneditable(d,field)
     {
@@ -642,7 +661,10 @@ d3.csv("uploads/test.csv", function (error, links) {
             .on("mousedown", null)
             .on("contextmenu", null);
     }
-    //further interface
+//---------------------------DOM Property modifcation functions END---------------------------
+
+
+//---------------------------further interface------------------------------------------------
     svg
         // .on("mousemove", updateDragLine)
         // .on("mouseup", hideDragLine)
@@ -652,12 +674,6 @@ d3.csv("uploads/test.csv", function (error, links) {
     //.on("mouseleave", hideDragLine)
     //.call(zoom);
 
-    d3.select(window)
-        // .on("keydown", keydown)
-        // .on("keyup", keyup)
-    restart();
-
-    
     //Interface with Context Menu
     d3.select("#contextEditOption")
         .on("click", function(){
@@ -702,4 +718,20 @@ d3.csv("uploads/test.csv", function (error, links) {
                 edges.call(make_edge_uneditable,"#edges");
             }
         })
+    
+    //Interface with Bot-Nav Bar
+    d3.select("#navLinkFullscreen")
+        .on("click",function(){
+            console.log("Fullscreen button pressed!");
+            force().stop();
+            zoomFit(0.95, 500)
+        })
+
+
+    d3.select(window)
+        // .on("keydown", keydown)
+        // .on("keyup", keyup)
+        .on('resize', resize);
+    restart(true);
+//---------------------------END of further interface-----------------------------------------
 });
