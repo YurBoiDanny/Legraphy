@@ -429,13 +429,13 @@ d3.csv("uploads/test.csv", function (error, links) {
             .enter()
             .append("line")
             .attr("class", "edge")
-            // .classed('selected', (d) => d === selectedLink)
             .style('marker-start', (d) => d.left ? 'url(#start-arrow)' : '')
-            .style('marker-end', (d) => d.right ? 'url(#end-arrow)' : '')
-            .on("mousedown", function () {
-                d3.event.stopPropagation();
-            })
-            .on("contextmenu", removeEdge)
+            .style('marker-end', (d) => d.right ? 'url(#end-arrow)' : '');
+
+        if(d3.select("#contextEditNodeEdgeOption").text() == "Edit Nodes/Edges")
+        {
+            ed.call(make_edge_editable,"#edges");
+        }
 
 
         ed.append("title").text(function (d) {
@@ -471,9 +471,11 @@ d3.csv("uploads/test.csv", function (error, links) {
             .style("fill", function (d, i) {
                 return colors[d.index % 20];
             })
-            .on("mousedown", beginDragLine)
-            .on("mouseup", endDragLine)
-            .on("contextmenu", removeNode);
+        if(d3.select("#contextEditNodeEdgeOption").text() != "Edit Nodes/Edges")
+        {
+            ve.call(make_node_editable,"#vertex");
+        }
+
 
         ve.append("title").text(function (d) {
             return "function:" + d.name;
@@ -495,7 +497,7 @@ d3.csv("uploads/test.csv", function (error, links) {
             .style("font-weight", "bold")
             .style("font-size", function(d) { return Math.min(2*d.r, (2*d.r - 10) / this.getComputedTextLength() * 10) + "px"; })
             .attr("dy", ".35em")
-            .call(make_editable, "labels");
+            //.call(make_editable, "labels");
         labels = la.merge(labels);
 
         edgeLabels = edgeLabels.data(links, function (d) {
@@ -513,7 +515,7 @@ d3.csv("uploads/test.csv", function (error, links) {
                 if (d.name) return d.name;
                 else return "dataLabel";
             })
-            .call(make_editable, "edgeLabel");
+            //.call(make_editable, "edgeLabel");
         edgeLabels = el.merge(edgeLabels);
 
         force.nodes(nodes);
@@ -526,26 +528,17 @@ d3.csv("uploads/test.csv", function (error, links) {
     }
 
     //Property modifcation functions
-    function make_editable(d, field){
+    function make_labels_editable(d, field){
         //console.log("make_editable", arguments);
     
         d
           .on("mouseover", function() {
             d3.select(this).style("fill", "red");
-            svg.on("mousedown", null)
-            svg.on("mouseup", null)
-            //console.log("NULLIFY!!!!");
           })
           .on("mouseout", function() {
-            svg.on("mousedown", addNode)
-            svg.on("mouseup", hideDragLine)
             d3.select(this).style("fill", null);
           })
           .on("click", function(d) {
-            svg.on("mousedown", null)
-            svg.on("mouseup", null)
-            svg.on("keydown", null);
-            svg.on("keyup", null);
             var p = this.parentNode;
     
             //console.log(this, arguments);
@@ -594,7 +587,7 @@ d3.csv("uploads/test.csv", function (error, links) {
                                     d3.event = window.event;
     
                                 var e = d3.event;
-                                if (e.keyCode == 13)
+                                if (e.keyCode == 13)//Enter Key
                                 {
                                     if (typeof(e.cancelBubble) !== 'undefined') // IE
                                       e.cancelBubble = true;
@@ -608,25 +601,105 @@ d3.csv("uploads/test.csv", function (error, links) {
                                     el.text(function(d) { return d[field]; });
     
                                     p_el.select("foreignObject").remove();
-
+                                    restart();
                                 }
                             });
           });
       }
+    
+    function make_labels_uneditable(d,field)
+    {
+        d
+            .on("mouseover",null)
+            .on("mouseout", null)
+            .on("click",null);
+    }
 
+    function make_node_editable(d,field){
+        d
+            .on("mousedown", beginDragLine)
+            .on("mouseup", endDragLine)
+            .on("contextmenu", removeNode);
+    }
+
+    function make_node_uneditable(d,field){
+        d
+            .on("mousedown", null)
+            .on("mouseup", null)
+            .on("contextmenu", null);
+    }
+
+    function make_edge_editable(d,field){
+        d
+            .on("mousedown", function () {
+                d3.event.stopPropagation();
+            })
+            .on("contextmenu", removeEdge);
+    }
+
+    function make_edge_uneditable(d,field){
+        d
+            .on("mousedown", null)
+            .on("contextmenu", null);
+    }
     //further interface
     svg
-        .on("mousemove", updateDragLine)
-        .on("mouseup", hideDragLine)
+        // .on("mousemove", updateDragLine)
+        // .on("mouseup", hideDragLine)
     // .on("contextmenu", function () {
     //   //d3.event.preventDefault();
     // })
     //.on("mouseleave", hideDragLine)
-    .call(zoom);
+    //.call(zoom);
 
     d3.select(window)
         // .on("keydown", keydown)
         // .on("keyup", keyup)
     restart();
 
+    
+    //Interface with Context Menu
+    d3.select("#contextEditOption")
+        .on("click", function(){
+            var option = d3.select("#contextEditOption");
+            if(option.text() == "Edit Labels")
+            {
+                option.text("Stop Editing Labels");
+                //console.log(d3.select("#contextEditOption").text());
+                edgeLabels.call(make_labels_editable, "edgeLabel");
+                labels.call(make_labels_editable, "labels");
+            }
+            else
+            {
+                option.text("Edit Labels");
+                //console.log(d3.select("#contextEditOption").text());
+                edgeLabels.call(make_labels_uneditable, "edgeLabel");
+                labels.call(make_labels_uneditable, "labels");
+            }
+        })
+    d3.select("#contextEditNodeEdgeOption")
+        .on("click", function(){
+            var option = d3.select("#contextEditNodeEdgeOption");
+            if(option.text() == "Edit Nodes/Edges")
+            {
+                option.text("Stop Editing Nodes/Edges");
+                svg
+                    .on("mousemove", updateDragLine)
+                    .on("mouseup", hideDragLine)
+                    .on("mousedown", addNode);
+                vertices.call(make_node_editable,"#vertex");
+                edges.call(make_edge_editable,"#edges");
+
+            }
+            else
+            {
+                option.text("Edit Nodes/Edges");
+                svg
+                    .on("mousemove", null)
+                    .on("mouseup", null)
+                    .on("mousedown", null);
+                vertices.call(make_node_uneditable,"#vertex");
+                edges.call(make_edge_uneditable,"#edges");
+            }
+        })
 });
