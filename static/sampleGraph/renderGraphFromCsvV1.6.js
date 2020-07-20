@@ -97,7 +97,7 @@ d3.csv("uploads/test.csv", function (error, links) {
         .attr("width", w * 2)
         .attr("height", h * 2)
         .call(zoom)
-        .append("g")
+        
 
     // define arrow markers for graph links
     svg.append('svg:defs').append('svg:marker')
@@ -723,9 +723,11 @@ d3.csv("uploads/test.csv", function (error, links) {
             {
                 option.text("Stop Editing Nodes/Edges");
                 svg
+                    .on('.zoom', null)
                     .on("mousemove", updateDragLine)
                     .on("mouseup", hideDragLine)
                     .on("mousedown", addNode);
+                    
                 vertices.call(make_node_editable,"#vertex");
                 edges.call(make_edge_editable,"#edges");
 
@@ -734,6 +736,7 @@ d3.csv("uploads/test.csv", function (error, links) {
             {
                 option.text("Edit Nodes/Edges");
                 svg
+                    .call(zoom)
                     .on("mousemove", null)
                     .on("mouseup", null)
                     .on("mousedown", null);
