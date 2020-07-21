@@ -13,14 +13,43 @@ d3.csv("uploads/test.csv", function (error, links) {
     glinks = links;
     var nodesByName = {};
 
-    //   var zoom = d3.zoom()
-    //   .scaleExtent([1, 200])
-    //   .on("zoom", zoomed);
+    var zoom = d3.zoom()
+    .scaleExtent([1, 10])
+    .on("zoom", zoomed);
 
     function zoomed() {
-        svg.attr("transform", d3.event.transform)
-        //console.log("Current Zoom Multiplier:",d3.event.transform.k);
+        const currentTransform = d3.event.transform;
+        svg.attr("transform", currentTransform);
+        slider.property("value", currentTransform.k);
     }
+
+    var slider = d3.select("#botNavBarZoomSlider").append("p").append("input")
+    .datum({})
+    .attr("type", "range")
+    .attr("value", zoom.scaleExtent()[0])
+    .attr("min", zoom.scaleExtent()[0])
+    .attr("max", zoom.scaleExtent()[1])
+    .attr("step", (zoom.scaleExtent()[1] - zoom.scaleExtent()[0]) / 100)
+    .on("input", slided);
+
+    function slided(d) {
+        zoom.scaleTo(svg, d3.select(this).property("value"));
+    }
+
+    var drag = d3.drag()
+        .subject(function(d){return d;})
+        .on("start",function startdrag(d){
+            d3.event.sourceEvent.stopPropagation();
+            d3.select(this).classed("dragging",true);
+        })
+        .on("drag", function dragged(d){
+            d3.select(this).attr("cx",d.x = d3.event.x).attr("cy", d.y = d3.event.y);
+        })
+        .on("end", function endOfDrag(d){
+            d3.select(this).classed("dragging", false);
+        });
+
+
     // Create nodes for each unique source and target.
     links.forEach(function (link) {
         link.source = nodeByName(link.source);
@@ -67,6 +96,8 @@ d3.csv("uploads/test.csv", function (error, links) {
         .append("svg")
         .attr("width", w * 2)
         .attr("height", h * 2)
+        .call(zoom)
+        
 
     // define arrow markers for graph links
     svg.append('svg:defs').append('svg:marker')
@@ -175,8 +206,9 @@ d3.csv("uploads/test.csv", function (error, links) {
         });
     }
 
-    //Finds the offset to place edges at the circumfrence of a target circle node
+//-----------------------------Graph Interface & Update Functions-----------------------------
 
+    //Finds the offset to place edges at the circumfrence of a target circle node
     function getOffset(d, cord, dest) {
 
         diffX = d.target.x - d.source.x;
@@ -413,9 +445,7 @@ d3.csv("uploads/test.csv", function (error, links) {
         return 10 + (Math.pow(d.weight, 1.3));
     }
 
-
-    //updates the graph by updating links, nodes and binding them with DOM
-    //interface is defined through several events
+//updates the graph by updating links, nodes and binding them with DOM
     function restart() {
         //console.log("The Restart Function has been called!");
 
@@ -526,8 +556,10 @@ d3.csv("uploads/test.csv", function (error, links) {
         glinks = links;
         glabels = labels;
     }
+//-----------------------------END of Graph Interface & Update Functions-----------------------------
 
-    //Property modifcation functions
+
+//---------------------------DOM Property modifcation functions---------------------------
     function make_labels_editable(d, field){
         //console.log("make_editable", arguments);
     
@@ -605,7 +637,7 @@ d3.csv("uploads/test.csv", function (error, links) {
                                 }
                             });
           });
-      }
+    }
     
     function make_labels_uneditable(d,field)
     {
@@ -642,22 +674,29 @@ d3.csv("uploads/test.csv", function (error, links) {
             .on("mousedown", null)
             .on("contextmenu", null);
     }
-    //further interface
+//---------------------------DOM Property modifcation functions END---------------------------
+
+
+//---------------------------further interface------------------------------------------------
     svg
+        //.call(drag)
+        //.call(zoom);
+
         // .on("mousemove", updateDragLine)
         // .on("mouseup", hideDragLine)
     // .on("contextmenu", function () {
-    //   //d3.event.preventDefault();
+    //   d3.event.preventDefault();
+    // //   var cm = d3.select("#custom-cm");
+    // //   const show = cm.style('display') ==='none';
+    // //   if(show)
+    // //     cm.style('display','block');
+    // //   else
+    // //     cm.style('display','none');
     // })
     //.on("mouseleave", hideDragLine)
     //.call(zoom);
-
-    d3.select(window)
-        // .on("keydown", keydown)
-        // .on("keyup", keyup)
-    restart();
-
     
+
     //Interface with Context Menu
     d3.select("#contextEditOption")
         .on("click", function(){
@@ -684,9 +723,11 @@ d3.csv("uploads/test.csv", function (error, links) {
             {
                 option.text("Stop Editing Nodes/Edges");
                 svg
+                    .on('.zoom', null)
                     .on("mousemove", updateDragLine)
                     .on("mouseup", hideDragLine)
                     .on("mousedown", addNode);
+                    
                 vertices.call(make_node_editable,"#vertex");
                 edges.call(make_edge_editable,"#edges");
 
@@ -695,6 +736,7 @@ d3.csv("uploads/test.csv", function (error, links) {
             {
                 option.text("Edit Nodes/Edges");
                 svg
+                    .call(zoom)
                     .on("mousemove", null)
                     .on("mouseup", null)
                     .on("mousedown", null);
@@ -702,4 +744,17 @@ d3.csv("uploads/test.csv", function (error, links) {
                 edges.call(make_edge_uneditable,"#edges");
             }
         })
+    
+    //Interface with Bot-Nav Bar
+    d3.select("#navLinkFullscreen")
+        .on("click",function(){
+            console.log("Fullscreen button pressed!");
+        })
+
+
+    d3.select(window)
+        // .on("keydown", keydown)
+        // .on("keyup", keyup)
+    restart();
+//---------------------------END of further interface-----------------------------------------
 });
