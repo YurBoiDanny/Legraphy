@@ -20,7 +20,7 @@ def mainPage():
 
 @app.route("/mainPageFresh")
 def mainPageFresh():
-    files = glob.glob(app.config['UPLOAD_FOLDER'])
+    files = glob.glob(app.config['UPLOAD_FOLDER']+"/*")
     for f in files:
         os.remove(f)
     return render_template("mainPageTemplates/mainPageV1.8.html")
@@ -30,9 +30,9 @@ def mainPageFresh():
 def upload():
     if request.method == "POST":
 
-        files = glob.glob(app.config['UPLOAD_FOLDER'])
-    for f in files:
-        os.remove(f)
+        files = glob.glob(app.config['UPLOAD_FOLDER']+"/*")
+        for f in files:
+            os.remove(f)
 
         if request.files:
             file = request.files['file']

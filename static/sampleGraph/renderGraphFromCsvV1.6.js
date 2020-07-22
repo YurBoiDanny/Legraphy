@@ -203,6 +203,16 @@ d3.csv("uploads/currentGraph.csv", function (error, links) {
         });
     }
 
+    d3.select("#graphResetBtn").on("click", clearGraph);
+
+    //empties the graph
+    function clearGraph() {
+      nodes.splice(0);
+      links.splice(0);
+      lastNodeId = 0;
+      restart();
+    }
+
 //-----------------------------Graph Interface & Update Functions-----------------------------
 
     //Finds the offset to place edges at the circumfrence of a target circle node
