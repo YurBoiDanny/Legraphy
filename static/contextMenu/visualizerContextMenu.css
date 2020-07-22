@@ -1,6 +1,6 @@
 .custom-cm{
-    background-color: #ffffff;
-    border: ipx solid #cccccc;
+    background-color: #a9a3a3c2;
+    border: ipx solid #000000;
     box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.1);
     padding: 10px 0;
     position: fixed;
@@ -20,6 +20,6 @@
 }
 
 .custom-cm__divider{
-    border-bottom: 1px  solid #eeeeee;
+    border-bottom: 1px  solid #5239cbfc;
     margin: 10px 0;
 }

@@ -4,9 +4,10 @@ var width = screen.width,
 
 console.log(width, height);
 
-var zoom = d3.behavior.zoom()
-    .scaleExtent([1, 10])
-    .on("zoom", zoomed);
+// var zoom = 
+//     d3.zoom()
+//     .scaleExtent([1, 10])
+//     .on("zoom", zoomed);
 
 var force = d3.layout.force()
     .size([width, height])
@@ -116,10 +117,10 @@ function flatten(root) {
   return nodes;
 }
 
-function zoomed() {
-  svg.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
-  console.log(zoom.scale());
-}
+// function zoomed() {
+//   svg.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+//   console.log(zoom.scale());
+// }
 
 function dragstarted(d) {
   d3.event.sourceEvent.stopPropagation();

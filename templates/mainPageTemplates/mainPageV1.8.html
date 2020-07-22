@@ -68,7 +68,7 @@
                                 </a>
                             </li>
                             <li>
-                                <a href="{{url_for('mainPage2')}}">  
+                                <a href="#!">  
                                     <span>
                                             <i class="material-icons">rotate_90_degrees_ccw</i>
                                             <span class="icon-text">Causal Graph</span>
@@ -95,7 +95,7 @@
                         </a>
                         <ul class="collapse list-unstyled" id="storageSubmenu">
                             <li>
-                                <a href="#">
+                                <a href="{{url_for('mainPage')}}">
                                     <span>
                                         <i class="material-icons">widgets</i>
                                         <span class="icon-text">Load</span>
@@ -103,7 +103,7 @@
                                 </a>
                             </li>
                             <li>
-                                <a href="#">
+                                <a href="/downloadExport">
                                     <span>
                                         <i class="material-icons">file_download</i>
                                         <span class="icon-text">Download</span>
@@ -154,12 +154,12 @@
                             <div class="row">
                             
                                 <!-- <script src="{{url_for('static', filename='sampleGraph/renderGraph.js')}}"></script> -->
-                                <script src="{{url_for('static', filename='sampleGraph/renderGraphFromCsvV1.5.js')}}"></script>
-                                <button type="button" id="sidebarCollapse" class="btn btn-info">
+                                <script src="{{url_for('static', filename='sampleGraph/renderGraphFromCsvV1.6.js')}}"></script>
+                                <!-- <button type="button" id="sidebarCollapse" class="btn btn-info">
                                         <i class="fas fa-align-left"></i>
                                         <span>Toggle L.Sidebar</span>
                                 </button>
-                                <a href class="btn btn-primary" data-toggle="sidebar">Toggle R.Sidebar</a>
+                                <a href class="btn btn-primary" data-toggle="sidebar">Toggle R.Sidebar</a> -->
                             </div>
                         </div>
                     </nav>
@@ -172,7 +172,14 @@
             <!-- <a class="navbar-brand" href="#">Tools</a> -->
             <ul class="nav justify-content-center">
                 <li class="nav-item">
-                    <a class="nav-link active" href="#!" onclick="flash('something!')">
+                    <a href id="botNavBarMenu"class="nav-link active" id="sidebarCollapse" onclick="return rightSiebarToggle()">
+                        <span>
+                            <i class="material-icons">arrow_left</i>
+                        </span> 
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="#!" >
                         <span>
                             <i class="material-icons">undo</i>
                         </span> 
@@ -186,9 +193,26 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" href="{{url_for('mainPage')}}">
+                    <a id="navLinkFullscreen" class="nav-link active" href="#!">
+                        <span>
+                            <i class="material-icons">fullscreen</i>
+                        </span> 
+                    </a>
+                </li>
+                <li id="botNavBarZoomSlider" class="nav-item" style="padding-top: 10px;">
+                        <!-- Inside here is where a zoom slider would go -->
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" id="graphResetBtn">
                         <span>
                             <i class="material-icons">settings_backup_restore</i>
+                        </span> 
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href id="botNavBarDetails"class="nav-link active" data-toggle="sidebar">
+                        <span>
+                            <i class="material-icons">arrow_right</i>
                         </span> 
                     </a>
                 </li>
@@ -244,10 +268,9 @@
 <!-- Context Menues  -->
     <!-- Visualizer Context Menu  -->
     <div id="custom-cm" class="custom-cm">
-        <div class="custom-cm__item">Add Node</div>
-        <div class="custom-cm__item">Add Edge</div>
-        <div class="custom-cm__item">Remove Edge/Node</div>
+        <div id="contextEditNodeEdgeOption" class="custom-cm__item">Edit Nodes/Edges</div>
         <div class="custom-cm__item">Cluster</div>
+        <div id="contextEditOption" class="custom-cm__item">Edit Labels</div>
         <div class="custom-cm__divider"></div>
         <div class="custom-cm__item"><a href="{{url_for('mainPage')}}">Reset Layout</a></div>
     </div>
