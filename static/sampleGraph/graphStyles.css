@@ -50,8 +50,8 @@
     pointer-events:  all;
     font-size: 10px;
     font-weight: bold;
-    stroke: #777;
-    /* stroke: none; */
+    /* stroke: #777; */
+    stroke: none;
   }
  
 

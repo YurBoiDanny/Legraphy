@@ -35,18 +35,18 @@ d3.csv("uploads/currentGraph.csv", function (error, links) {
         zoom.scaleTo(svg, d3.select(this).property("value"));
     }
 
-    // var drag = d3.drag()
-    //     .subject(function(d){return d;})
-    //     .on("start",function startdrag(d){
-    //         d3.event.sourceEvent.stopPropagation();
-    //         d3.select(this).classed("dragging",true);
-    //     })
-    //     .on("drag", function dragged(d){
-    //         d3.select(this).attr("cx",d.x = d3.event.x).attr("cy", d.y = d3.event.y);
-    //     })
-    //     .on("end", function endOfDrag(d){
-    //         d3.select(this).classed("dragging", false);
-    //     });
+    var drag = d3.drag()
+        .subject(function(d){return d;})
+        .on("start",function startdrag(d){
+            d3.event.sourceEvent.stopPropagation();
+            d3.select(this).classed("dragging",true);
+        })
+        .on("drag", function dragged(d){
+            d3.select(this).attr("cx",d.x = d3.event.x).attr("cy", d.y = d3.event.y);
+        })
+        .on("end", function endOfDrag(d){
+            d3.select(this).classed("dragging", false);
+        });
 
     // Create nodes for each unique source and target.
     links.forEach(function (link) {
@@ -97,7 +97,7 @@ d3.csv("uploads/currentGraph.csv", function (error, links) {
         .attr("width", w * 2)
         .attr("height", h * 2)
         .call(zoom)
-        .append("g")
+        
 
   
 
@@ -131,9 +131,9 @@ d3.csv("uploads/currentGraph.csv", function (error, links) {
         .attr("d", "M0,0L0,0");
 
     var edges = svg.append("g").selectAll(".edge");
-    var vertices = svg.append("g").selectAll(".vertex");
-    var edgeLabels = svg.append("g").selectAll(".edgeLabel");
-    var labels = svg.append('svg:g').selectAll(".labels");
+    var vertices = svg.selectAll(".vertex");
+    var edgeLabels = svg.selectAll(".edgeLabel");
+    var labels = svg.selectAll(".labels");
 
     var force = d3
         .forceSimulation()
@@ -489,6 +489,34 @@ d3.csv("uploads/currentGraph.csv", function (error, links) {
         }
     }
 
+    function hideTooltip(d, field)
+    {
+        tooltip.transition()
+        .duration(100)
+        .style("opacity", 0);
+    }
+
+    function showEdgeTooltip(d, field)
+    {
+        tooltip.transition()
+        .duration(300)
+        .style("opacity", .8);
+      tooltip.html("Source:"+ d.source.name + 
+                 "<br>Target:" + d.target.name )
+        .style("left", (d3.event.pageX) + "px")
+        .style("top", (d3.event.pageY + 10) + "px");
+    }
+
+    function showNodeTooltip(d, field)
+    {
+        tooltip.transition()
+        .duration(300)
+        .style("opacity", .8);
+      tooltip.html("Name:" + d.name)
+        .style("left", (d3.event.pageX) + "px")
+        .style("top", (d3.event.pageY + 10) + "px");
+    }
+
 //updates the graph by updating links, nodes and binding them with DOM
     function restart() {
         //console.log("The Restart Function has been called!");
@@ -618,10 +646,7 @@ d3.csv("uploads/currentGraph.csv", function (error, links) {
             .enter()
             .append("text")
             .attr("class", "edgeLabel")
-            //.style("font-family", "Arial")
             .style("font", "12px times")
-            //.style("font-size", 10)
-            //.style( 'fill', '#aaa')
             .attr("startOffset", "50%")
             .text(function (d) {
                 txt = ""
@@ -818,7 +843,7 @@ d3.csv("uploads/currentGraph.csv", function (error, links) {
 
                 cmListenerToggler = false;
 
-                d3.select("svg")
+                svg
                     .on('.zoom', null)
                     .on("mousemove", updateDragLine)
                     .on("mouseup", hideDragLine)
@@ -827,6 +852,13 @@ d3.csv("uploads/currentGraph.csv", function (error, links) {
                 d3.select(window)
                     .on("keydown", keydown)
                     .on("keyup", keyup)
+                
+                vertices
+                    .on('mouseover.fade', null)
+                    .on('mouseout.fade', null)
+                edges
+                    .on('mouseout.fade', null)
+               
                     
                 vertices.call(make_node_editable,"#vertex");
                 edges.call(make_edge_editable,"#edges");
@@ -844,6 +876,12 @@ d3.csv("uploads/currentGraph.csv", function (error, links) {
                 d3.select(window)
                     .on("keydown", null)
                     .on("keyup", null)
+                
+                vertices
+                    .on('mouseover.fade', fade(0.1))
+                    .on('mouseout.fade', fade(1))
+                edges
+                    .on('mouseout.fade', fade(1))
                 vertices.call(make_node_uneditable,"#vertex");
                 edges.call(make_edge_uneditable,"#edges");
             }
