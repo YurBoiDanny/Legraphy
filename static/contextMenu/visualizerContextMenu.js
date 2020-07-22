@@ -10,7 +10,7 @@ $(document).ready(function () {
 
 
     graphSVG.addEventListener('contextmenu', (e) => {
-        //e.preventDefault();
+        e.preventDefault();
         if (cmListenerToggler) showContextMenu();
         cm.style["top"] = e.y + "px";
         cm.style["left"] = e.x + "px";

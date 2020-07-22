@@ -4,14 +4,6 @@
     stroke-width: 1.5px;
   }
   
-  #licensing {
-    fill: green;
-  }
-  
-  .link.licensing {
-    stroke: green;
-  }
-  
   .link.resolved {
     stroke-dasharray: 0,2 1;
   }
@@ -19,13 +11,8 @@
   text {
     font: 10px sans-serif;
     pointer-events: auto;
-    text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
-  }
-
-  svg {
-    cursor: crosshair;
-    display: block;
-    margin: auto;
+    font-weight: bold;
+    text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff; */
   }
   
   .edge {
@@ -40,12 +27,10 @@
   .dragLine {
     stroke: rgb(255, 0, 0);
     stroke-width: 3px;
+    pointer-events: all;
   }
-  
-  .vertex {
-    cursor: pointer;
-  }
-  
+
+
   .vertex:hover {
     stroke: rgb(51, 51, 51);
     opacity: 0.8;
@@ -62,8 +47,24 @@
 
   .vertex text {
     text-anchor: middle;
-    pointer-events: auto;
+    pointer-events:  all;
     font-size: 10px;
     font-weight: bold;
-    stroke: none;
+    stroke: #777;
+    /* stroke: none; */
+  }
+ 
+
+  div.tooltip {
+    position: absolute;
+    background-color: rgba(107, 139, 138, 0);
+    max-width; 200px;
+    height: auto;
+    padding: 1px;
+    border-style: solid;
+    border-radius: 4px;
+    border-width: 1px;
+    box-shadow: 3px 3px 10px rgba(0, 0, 0, .5);
+    pointer-events: none;
+    z-index: 100%;
   }

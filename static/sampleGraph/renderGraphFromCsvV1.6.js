@@ -35,19 +35,18 @@ d3.csv("uploads/currentGraph.csv", function (error, links) {
         zoom.scaleTo(svg, d3.select(this).property("value"));
     }
 
-    var drag = d3.drag()
-        .subject(function(d){return d;})
-        .on("start",function startdrag(d){
-            d3.event.sourceEvent.stopPropagation();
-            d3.select(this).classed("dragging",true);
-        })
-        .on("drag", function dragged(d){
-            d3.select(this).attr("cx",d.x = d3.event.x).attr("cy", d.y = d3.event.y);
-        })
-        .on("end", function endOfDrag(d){
-            d3.select(this).classed("dragging", false);
-        });
-
+    // var drag = d3.drag()
+    //     .subject(function(d){return d;})
+    //     .on("start",function startdrag(d){
+    //         d3.event.sourceEvent.stopPropagation();
+    //         d3.select(this).classed("dragging",true);
+    //     })
+    //     .on("drag", function dragged(d){
+    //         d3.select(this).attr("cx",d.x = d3.event.x).attr("cy", d.y = d3.event.y);
+    //     })
+    //     .on("end", function endOfDrag(d){
+    //         d3.select(this).classed("dragging", false);
+    //     });
 
     // Create nodes for each unique source and target.
     links.forEach(function (link) {
@@ -86,14 +85,22 @@ d3.csv("uploads/currentGraph.csv", function (error, links) {
     var lastNodeId = nodes.length;
     console.log(nodes)
 
+    var tooltip = d3.select("#graphContainer").append("div")
+    .attr("class","tooltip")
+    .attr("opacity", 0);
+
     positionNodes();
     var k = Math.sqrt(nodes.length / ((w * h) / 2));
     var svg = d3
-        .select("body")
+        .select("#graphContainer")
         .append("svg")
         .attr("width", w * 2)
         .attr("height", h * 2)
         .call(zoom)
+        .append("g")
+
+  
+
         
 
     // define arrow markers for graph links
@@ -232,32 +239,32 @@ d3.csv("uploads/currentGraph.csv", function (error, links) {
 
     //update the simulation
     function tick() {
-        var ex1,ey1,ex2,ey2;
+        //var ex1,ey1,ex2,ey2;
 
         edges.attr("x1", function (d) {
-            ex1 = d.source.x - getOffset(d, "x", "source")
+            var ex1 = d.source.x - getOffset(d, "x", "source")
             return ex1;
         })
             .attr("y1", function (d) {
-                ey1 =  d.source.y - getOffset(d, "y", "source")
+                var ey1 =  d.source.y - getOffset(d, "y", "source")
                 return ey1;
             })
             .attr("x2", function (d) {
                 // Total difference in x and y from source to target
                 //console.log("-getOffset(d,x) =", getOffset(d,"x"))
-                ex2 = d.target.x - getOffset(d, "x", "target")
+                var ex2 = d.target.x - getOffset(d, "x", "target")
                 return ex2;
             })
             .attr("y2", function (d) {
                 //console.log("-getOffset(d,x) =", getOffset(d,"y"))
-                ey2 =  d.target.y - getOffset(d, "y", "target");
+                var ey2 =  d.target.y - getOffset(d, "y", "target");
                 return ey2;
             });
 
         //here vertices are g.vertex elements
         vertices.attr("transform", function (d) {
             return "translate(" + d.x + "," + d.y + ")";
-        });
+        })
         // vertices.attr("cx", function(d){ return d.x})
         //         .attr("cy", function(d){ return d.y});
 
@@ -270,7 +277,8 @@ d3.csv("uploads/currentGraph.csv", function (error, links) {
 
         labels.attr("x", function (d) { return d.x; })
             .attr("y", function (d) { return d.y; })
-            //.style("font-size", function(d,i) { return Math.min((2*d.r - 10) / this.getComputedTextLength() * 10) + "px"; });
+            //.style("font-size", function(d,i) { return Math.min(2*d.r, (2*d.r - 10) / d.edge.getComputedTextLength() * 10) + "px"; })
+            //.style("font-size", function(d,i) { return ((2*d.r - 10) / this.getComputedTextLength() * 10) + "px"; });
 
         edgeLabels.attr("x", function (d) {
             if(d.source.x<d.target.x)
@@ -458,14 +466,37 @@ d3.csv("uploads/currentGraph.csv", function (error, links) {
         return 10 + (Math.pow(d.weight, 1.3));
     }
 
+    const linkedByIndex = {};
+    links.forEach(d => {
+      linkedByIndex[`${d.source.index},${d.target.index}`] = 1;
+    });
+
+    function isConnected(a, b) {
+        return linkedByIndex[`${a.index},${b.index}`] || linkedByIndex[`${b.index},${a.index}`] || a.index === b.index;
+    }
+
+    //Fade other node/edges to highlight connected ones to a selected node
+    function fade(opacity)
+    {
+        return d =>{
+            vertices.style('opacity', function(x){
+                const thisOpacity = isConnected(d,x)? 1:opacity;
+                this.setAttribute('fill-Opacity', thisOpacity);
+                //console.log("the fill opacity = ", thisOpacity)
+                return thisOpacity;
+            });
+            edges.style('stroke-opacity', o => (o.source === d || o.target === d ? 1 : opacity));
+        }
+    }
+
 //updates the graph by updating links, nodes and binding them with DOM
     function restart() {
         //console.log("The Restart Function has been called!");
 
-        edges = edges.data(links, function (d) {
-            return "v" + d.source.index + "-v" + d.target.index;
-        });
-
+        // edges = edges.data(links, function (d) {
+        //     return "v" + d.source.index + "-v" + d.target.index;
+        // });
+        edges = edges.data(links)
         edges.exit().remove();
 
         var ed = edges
@@ -474,7 +505,22 @@ d3.csv("uploads/currentGraph.csv", function (error, links) {
             .attr("class", "edge")
             .attr('id', function(d,i){return "edge"+d.index})
             .style('marker-start', (d) => d.left ? 'url(#start-arrow)' : '')
-            .style('marker-end', (d) => d.right ? 'url(#end-arrow)' : '');
+            .style('marker-end', (d) => d.right ? 'url(#end-arrow)' : '') 
+            .on('mouseover.tooltip', function(d) {
+                tooltip.transition()
+                  .duration(300)
+                  .style("opacity", .8);
+                tooltip.html("Source:"+ d.source.name + 
+                           "<br>Target:" + d.target.name )
+                  .style("left", (d3.event.pageX) + "px")
+                  .style("top", (d3.event.pageY + 10) + "px");
+              })
+              .on("mouseout.tooltip", function() {
+                tooltip.transition()
+                  .duration(100)
+                  .style("opacity", 0);
+              })
+            .attr("mouseout.fade",fade(1));
 
         if(d3.select("#contextEditNodeEdgeOption").text() == "Edit Nodes/Edges")
         {
@@ -482,17 +528,18 @@ d3.csv("uploads/currentGraph.csv", function (error, links) {
         }
 
 
-        ed.append("title").text(function (d) {
-            return "v" + d.source.index + "-v" + d.target.index;
-        });
+        // ed.append("title").text(function (d) {
+        //     return "v" + d.source.index + "-v" + d.target.index;
+        // });
 
         edges = ed.merge(edges);
 
 
-        vertices = vertices.data(nodes, function (d) {
-            //Recharge the nodes
-            return d.index;
-        })
+        // vertices = vertices.data(nodes, function (d) {
+        //     //Recharge the nodes
+        //     return d.index;
+        // })
+        vertices = vertices.data(nodes)
         vertices.exit().remove();
 
         var ve = vertices
@@ -508,22 +555,39 @@ d3.csv("uploads/currentGraph.csv", function (error, links) {
                 //console.log("setting weight of this", d.name, "to...", d.r);
                 return d.r
             })
-            .attr("class", "vertex")
-            .attr("name", function (d) {
-                return "vertex-" + d.name;
-            })
+            .attr("cursor","pointer")
             .style("fill", function (d, i) {
                 return colors[d.index % 20];
             })
+            .on('mouseover.tooltip', function(d) {
+                tooltip.transition()
+                  .duration(300)
+                  .style("opacity", .8);
+                tooltip.html("Name:" + d.name)
+                  .style("left", (d3.event.pageX) + "px")
+                  .style("top", (d3.event.pageY + 10) + "px");
+              })
+            .on("mouseout.tooltip", function() {
+              tooltip.transition()
+                  .duration(100)
+                  .style("opacity", 0);
+              })
+            .on('mouseover.fade', fade(0.1))
+            .on('mouseout.fade', fade(1))
+            .on("mousemove", function() {
+                tooltip.style("left", (d3.event.pageX) + "px")
+                  .style("top", (d3.event.pageY + 10) + "px");
+              })
+            
         if(d3.select("#contextEditNodeEdgeOption").text() != "Edit Nodes/Edges")
         {
             ve.call(make_node_editable,"#vertex");
         }
 
 
-        ve.append("title").text(function (d) {
-            return "function:" + d.name;
-        });
+        // ve.append("title").text(function (d) {
+        //     return "function:" + d.name;
+        // });
 
         vertices = ve.merge(vertices);
 
@@ -538,6 +602,7 @@ d3.csv("uploads/currentGraph.csv", function (error, links) {
             .text(function (d,i) { return d.name; })
             .style("text-anchor", "middle")
             .style("fill", "black")
+            .style("font", "12px times")
             .style("font-weight", "bold")
             .style("font-size", function(d,i) { return Math.min(2*d.r, (2*d.r - 10) / this.getComputedTextLength() * 10) + "px"; })
             .attr("dy", ".35em")
@@ -553,9 +618,10 @@ d3.csv("uploads/currentGraph.csv", function (error, links) {
             .enter()
             .append("text")
             .attr("class", "edgeLabel")
-            .style("font-family", "Arial")
-            .style("font-size", 10)
-            .style( 'fill', '#aaa')
+            //.style("font-family", "Arial")
+            .style("font", "12px times")
+            //.style("font-size", 10)
+            //.style( 'fill', '#aaa')
             .attr("startOffset", "50%")
             .text(function (d) {
                 txt = ""
@@ -661,12 +727,15 @@ d3.csv("uploads/currentGraph.csv", function (error, links) {
                                     else
                                     {
                                         d.name = txt;
+                                        
+
                                     }
                                     
                                     //console.log(d.name)
-                                    restart();
+                                    //restart();
                                     
                                     p_el.select("foreignObject").remove();
+                                   
                                     
                                 }
                             });
@@ -712,21 +781,11 @@ d3.csv("uploads/currentGraph.csv", function (error, links) {
 
 
 //---------------------------further interface------------------------------------------------
-    svg
+    //svg
         //.call(drag)
         //.call(zoom);
-
         // .on("mousemove", updateDragLine)
         // .on("mouseup", hideDragLine)
-    .on("contextmenu", function () {
-      d3.event.preventDefault();
-    //   var cm = d3.select("#custom-cm");
-    //   const show = cm.style('display') ==='none';
-    //   if(show)
-    //     cm.style('display','block');
-    //   else
-    //     cm.style('display','none');
-    })
     //.on("mouseleave", hideDragLine)
     //.call(zoom);
     
@@ -759,7 +818,7 @@ d3.csv("uploads/currentGraph.csv", function (error, links) {
 
                 cmListenerToggler = false;
 
-                svg
+                d3.select("svg")
                     .on('.zoom', null)
                     .on("mousemove", updateDragLine)
                     .on("mouseup", hideDragLine)
@@ -776,7 +835,7 @@ d3.csv("uploads/currentGraph.csv", function (error, links) {
             else
             {
                 option.text("Edit Nodes/Edges");
-                svg
+                d3.select("svg")
                     .call(zoom)
                     .on("mousemove", null)
                     .on("mouseup", null)
@@ -795,8 +854,6 @@ d3.csv("uploads/currentGraph.csv", function (error, links) {
         .on("click",function(){
             console.log("Fullscreen button pressed!");
         })
-
-
 
     restart();
 //---------------------------END of further interface-----------------------------------------
