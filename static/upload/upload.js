@@ -36,6 +36,7 @@ $(document).ready(function(){
                     $('#uploadSubmitBtn').css("display","none");
                     $('#uploadModalCloseBtn').attr("class","btn btn-success").text("Confirm");
                     //alert('File uploaded!');
+                
                 }
             });
         } else {

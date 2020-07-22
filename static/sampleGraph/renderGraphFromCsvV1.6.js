@@ -1,8 +1,6 @@
-var gnodes = [[]]
 var glinks = [[]]
-var glabels = [];
 
-d3.csv("uploads/test.csv", function (error, links) {
+d3.csv("uploads/currentGraph.csv", function (error, links) {
     if (error) throw error;
 
     // var w = 3840,//screen.width,
@@ -70,7 +68,7 @@ d3.csv("uploads/test.csv", function (error, links) {
     });
 
 
-    //console.log(links)
+    console.log(links)
     // Extract the array of nodes from the map by name.
     var nodes = d3.values(nodesByName);
 
@@ -84,10 +82,8 @@ d3.csv("uploads/test.csv", function (error, links) {
         node.r = 1;
     })
 
-    gnodes = nodes;
-
     var lastNodeId = nodes.length;
-    //console.log(nodes)
+    console.log(nodes)
 
     positionNodes();
     var k = Math.sqrt(nodes.length / ((w * h) / 2));
@@ -278,7 +274,6 @@ d3.csv("uploads/test.csv", function (error, links) {
 
             })
 
-
     }
 
     function addNode() {
@@ -459,6 +454,7 @@ d3.csv("uploads/test.csv", function (error, links) {
             .enter()
             .append("line")
             .attr("class", "edge")
+            .attr('id', function(d,i){return "edge"+d.index})
             .style('marker-start', (d) => d.left ? 'url(#start-arrow)' : '')
             .style('marker-end', (d) => d.right ? 'url(#end-arrow)' : '');
 
@@ -521,11 +517,11 @@ d3.csv("uploads/test.csv", function (error, links) {
         var la = labels
             .enter()
             .append("text")
-            .text(function (d) { return d.name; })
+            .text(function (d,i) { return d.name; })
             .style("text-anchor", "middle")
             .style("fill", "black")
             .style("font-weight", "bold")
-            .style("font-size", function(d) { return Math.min(2*d.r, (2*d.r - 10) / this.getComputedTextLength() * 10) + "px"; })
+            .style("font-size", function(d,i) { return Math.min(2*d.r, (2*d.r - 10) / this.getComputedTextLength() * 10) + "px"; })
             .attr("dy", ".35em")
             //.call(make_editable, "labels");
         labels = la.merge(labels);
@@ -533,28 +529,35 @@ d3.csv("uploads/test.csv", function (error, links) {
         edgeLabels = edgeLabels.data(links, function (d) {
             return d.index;
         })
-
         edgeLabels.exit().remove();
+        
         var el = edgeLabels
             .enter()
             .append("text")
             .attr("class", "edgeLabel")
             .style("font-family", "Arial")
-            .style("font-size", 8)
+            .style("font-size", 10)
+            .style( 'fill', '#aaa')
+            .attr("startOffset", "50%")
             .text(function (d) {
-                if (d.name) return d.name;
-                else return "dataLabel";
+                txt = ""
+                if(!d.edge)
+                {
+                    d.edge = "newEdgeLabel"
+                }
+                txt = d.edge
+                return txt;
             })
-            //.call(make_editable, "edgeLabel");
+
         edgeLabels = el.merge(edgeLabels);
 
         force.nodes(nodes);
         force.force("link").links(links);
         force.alpha(0.8).restart();
 
-        gnodes = nodes;
         glinks = links;
-        glabels = labels;
+
+        console.log(glinks);
     }
 //-----------------------------END of Graph Interface & Update Functions-----------------------------
 
@@ -562,7 +565,7 @@ d3.csv("uploads/test.csv", function (error, links) {
 //---------------------------DOM Property modifcation functions---------------------------
     function make_labels_editable(d, field){
         //console.log("make_editable", arguments);
-    
+        
         d
           .on("mouseover", function() {
             d3.select(this).style("fill", "red");
@@ -575,7 +578,8 @@ d3.csv("uploads/test.csv", function (error, links) {
     
             //console.log(this, arguments);
             //console.log(this);
-    
+            
+
             var el = d3.select(this);
             var p_el = d3.select(p);
     
@@ -631,9 +635,20 @@ d3.csv("uploads/test.csv", function (error, links) {
     
                                     d[field] = txt;
                                     el.text(function(d) { return d[field]; });
-    
-                                    p_el.select("foreignObject").remove();
+                                    
+                                    if (el.attr("class") === "edgeLabel")
+                                    {
+                                        d.edge = txt;
+                                    }
+                                    else
+                                    {
+                                        d.name = txt;
+                                    }
+                                    
+                                    //console.log(d.name)
                                     restart();
+                                    p_el.select("foreignObject").remove();
+                                    
                                 }
                             });
           });
