@@ -18,7 +18,7 @@
   
   text {
     font: 10px sans-serif;
-    pointer-events: none;
+    pointer-events: auto;
     text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
   }
 
@@ -62,7 +62,7 @@
 
   .vertex text {
     text-anchor: middle;
-    pointer-events: none;
+    pointer-events: auto;
     font-size: 10px;
     font-weight: bold;
     stroke: none;

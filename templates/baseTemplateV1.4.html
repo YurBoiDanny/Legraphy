@@ -5,6 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
     <title>Legraphy: Main Page</title>
 
     <!-- Bootstrap CSS CDN -->
@@ -16,7 +17,6 @@
     <link rel="stylesheet" href="{{url_for('static', filename='sampleGraph/graphStyles.css')}}">
     <link rel="stylesheet" href="{{url_for('static', filename='upload/upload.css')}}">
     <link rel="stylesheet" href="{{url_for('static', filename='contextMenu/visualizerContextMenu.css')}}">
-    <!-- <script type="text/javascript" src="{{url_for("static", filename="d3/d3.js")}}"></script> -->
     <script src="https://d3js.org/d3.v4.min.js"></script>
 
     <!-- Font Awesome JS -->
@@ -46,8 +46,8 @@
     <script src="{{url_for('static',filename='botBar/botBar.js')}}"></script>
     <script src="{{url_for('static',filename='sidebar/rightSidebar.js')}}"></script>
     <script src="{{url_for('static',filename='upload/upload.js')}}"></script>
-    <script src="{{url_for('static',filename='contextMenu/visualizerContextMenu.js')}}"></script>
     <script src="{{url_for('static',filename='export/exportAsCsv.js')}}"></script>
+    
 </body>
-
+<script src="{{url_for('static',filename='contextMenu/visualizerContextMenu.js')}}"></script>s
 </html>

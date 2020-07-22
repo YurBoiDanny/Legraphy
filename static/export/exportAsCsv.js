@@ -9,16 +9,15 @@ $(document).ready(function(){
         // [1, "Linus Torvalds", "Linux Kernel"],
         // [2, "Tim Berners-Lee", "World Wide Web"],
         // [3, "Guido van Rossum", "Python Programming"]]
-        console.log(gnodes);
         console.log(glinks);
         var allData = []
-        allData.push(gnodes);
+        allData.push(glinks);
         allData.push(glinks)
         //Ajax Command to export visualization data as a csv file
         $.ajax({
             url:"/createCsvExport",
             //data: JSON.stringify({tmpData}),
-            data: JSON.stringify({allData}),
+            data: JSON.stringify({glinks}),
             datatype: 'json',
             contentType:"application/json;charset=utf-8",
             type: 'POST',
@@ -29,7 +28,5 @@ $(document).ready(function(){
                 alert("Export Post Request FAILED");
             }
         });
-
-
     })
 });
