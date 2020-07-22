@@ -1,4 +1,5 @@
 var glinks = [[]]
+var cmListenerToggler = true;
 
 d3.csv("uploads/currentGraph.csv", function (error, links) {
     if (error) throw error;
@@ -258,7 +259,8 @@ d3.csv("uploads/currentGraph.csv", function (error, links) {
 
 
         labels.attr("x", function (d) { return d.x; })
-            .attr("y", function (d) { return d.y; });
+            .attr("y", function (d) { return d.y; })
+            //.style("font-size", function(d,i) { return Math.min((2*d.r - 10) / this.getComputedTextLength() * 10) + "px"; });
 
         edgeLabels.attr("x", function (d) {
             if(d.source.x<d.target.x)
@@ -309,7 +311,7 @@ d3.csv("uploads/currentGraph.csv", function (error, links) {
         });
         nodes.splice(nodes.indexOf(d), 1);
 
-        //e.preventDefault();
+        e.preventDefault();
         restart();
     }
 
@@ -399,6 +401,7 @@ d3.csv("uploads/currentGraph.csv", function (error, links) {
         console.log("lastKeyDown =", lastKeyDown)
 
         if (lastKeyDown === "Control") {
+
             vertices.call(
                 d3
                     .drag()
@@ -420,6 +423,11 @@ d3.csv("uploads/currentGraph.csv", function (error, links) {
         }
         else if (lastKeyDown === "a") {
             svg.on("mousedown", addNode)
+        }
+        else if (lastKeyDown === "Escape")
+        {
+            console.log("escape key pressed")
+            cmListenerToggler = true;
         }
     }
 
@@ -647,6 +655,7 @@ d3.csv("uploads/currentGraph.csv", function (error, links) {
                                     
                                     //console.log(d.name)
                                     restart();
+                                    
                                     p_el.select("foreignObject").remove();
                                     
                                 }
@@ -699,15 +708,15 @@ d3.csv("uploads/currentGraph.csv", function (error, links) {
 
         // .on("mousemove", updateDragLine)
         // .on("mouseup", hideDragLine)
-    // .on("contextmenu", function () {
-    //   d3.event.preventDefault();
-    // //   var cm = d3.select("#custom-cm");
-    // //   const show = cm.style('display') ==='none';
-    // //   if(show)
-    // //     cm.style('display','block');
-    // //   else
-    // //     cm.style('display','none');
-    // })
+    .on("contextmenu", function () {
+      d3.event.preventDefault();
+    //   var cm = d3.select("#custom-cm");
+    //   const show = cm.style('display') ==='none';
+    //   if(show)
+    //     cm.style('display','block');
+    //   else
+    //     cm.style('display','none');
+    })
     //.on("mouseleave", hideDragLine)
     //.call(zoom);
     
@@ -737,11 +746,18 @@ d3.csv("uploads/currentGraph.csv", function (error, links) {
             if(option.text() == "Edit Nodes/Edges")
             {
                 option.text("Stop Editing Nodes/Edges");
+
+                cmListenerToggler = false;
+
                 svg
                     .on('.zoom', null)
                     .on("mousemove", updateDragLine)
                     .on("mouseup", hideDragLine)
                     .on("mousedown", addNode);
+
+                d3.select(window)
+                    .on("keydown", keydown)
+                    .on("keyup", keyup)
                     
                 vertices.call(make_node_editable,"#vertex");
                 edges.call(make_edge_editable,"#edges");
@@ -755,6 +771,10 @@ d3.csv("uploads/currentGraph.csv", function (error, links) {
                     .on("mousemove", null)
                     .on("mouseup", null)
                     .on("mousedown", null);
+
+                d3.select(window)
+                    .on("keydown", null)
+                    .on("keyup", null)
                 vertices.call(make_node_uneditable,"#vertex");
                 edges.call(make_edge_uneditable,"#edges");
             }
@@ -767,9 +787,7 @@ d3.csv("uploads/currentGraph.csv", function (error, links) {
         })
 
 
-    d3.select(window)
-        // .on("keydown", keydown)
-        // .on("keyup", keyup)
+
     restart();
 //---------------------------END of further interface-----------------------------------------
 });

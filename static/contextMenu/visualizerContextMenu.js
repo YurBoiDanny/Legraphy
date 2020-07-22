@@ -7,8 +7,8 @@ function showContextMenu(show = true)
 }
 
 graphSVG.addEventListener('contextmenu', (e) => {
-    e.preventDefault();
-    showContextMenu();
+    //e.preventDefault();
+    if(cmListenerToggler) showContextMenu();
     cm.style["top"] = e.y + "px";
     cm.style["left"] = e.x + "px";
     cm.style.zIndex = 100;
