@@ -39,7 +39,7 @@ a[data-toggle="collapse"]{
 
 /*
     ADDITIONAL DEMO STYLE, NOT IMPORTANT TO MAKE THINGS WORK BUT TO MAKE IT A BIT NICER :)
-*/
+*/ 
 @import "https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700";
 
 
@@ -53,7 +53,7 @@ p {
     font-size: 1.1em;
     font-weight: 300;
     line-height: 1.7em;
-    color: #999;
+    color: rgb(255, 255, 255);
 }
 
 a, a:hover, a:focus {
@@ -70,7 +70,7 @@ a, a:hover, a:focus {
 }
 
 #sidebar .sidebar-header {
-    padding: 20px;
+    padding: 25px;
     background: #6d7fcc;
 }
 
@@ -81,11 +81,11 @@ a, a:hover, a:focus {
 
 #sidebar ul p {
     color: #fff;
-    padding: 10px;
+    padding: 20px;
 }
 
 #sidebar ul li a {
-    padding: 10px;
+    padding: 15px;
     font-size: 1.1em;
     display: block;
 }
@@ -103,3 +103,13 @@ ul ul a {
     padding-left: 30px !important;
     background: #6d7fcc;
 }
+
+.material-icons,
+  .icon-text {
+    vertical-align: middle;
+  }
+  
+  .material-icons {
+  
+    margin-right: 5px
+  }

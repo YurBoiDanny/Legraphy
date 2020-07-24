@@ -1,0 +1,7 @@
+source,target,edge
+A1,A2,newEdgeLabel
+A2,A3,newEdgeLabel
+A2,A4,newEdgeLabel
+A5,A2,newEdgeLabel
+A6,A7,newEdgeLabel
+A10,A5,newEdgeLabel

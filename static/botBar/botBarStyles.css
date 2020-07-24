@@ -4,9 +4,19 @@
     max-width: fit-content;
     min-height: 10vh;
     border-radius: 44px;
+    
 }
 
 .container {
     padding: 15px;
+    
 }
 
+.material-icons,
+  .icon-text {
+    vertical-align: middle;
+  }
+  
+  .material-icons {
+    margin-right: 5px
+  }
