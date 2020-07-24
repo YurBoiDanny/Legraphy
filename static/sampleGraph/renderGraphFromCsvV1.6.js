@@ -652,7 +652,7 @@ d3.csv("uploads/currentGraph.csv", function (error, links) {
                 txt = ""
                 if(!d.edge)
                 {
-                    d.edge = "newEdgeLabel"
+                   // d.edge = "newEdgeLabel"
                 }
                 txt = d.edge
                 return txt;

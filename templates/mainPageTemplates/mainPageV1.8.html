@@ -7,15 +7,18 @@
             <div id="sidebar-wrapperRightSidebar">
                 <ul class="sidebar-nav">
                     <li class="sidebar-brand">
-                        <a href="#">
-                            Details Tab
+                        <a style="font-size: 24px;padding: top 10px;" href="#">
+                            Graph Name 
                         </a>
                     </li>
                     <li>
-                        <a href="#">Link 1</a>
+                        <a href="#">Cohesion: %</a>
                     </li>
                     <li>
-                        <a href="#">Link 2</a>
+                        <a href="#">Coupling: %</a>
+                    </li>
+                    <li>
+                        <a href="#">Node Depth Level: %</a>
                     </li>
                 </ul>
             </div>
@@ -76,7 +79,7 @@
                                 </a>
                             </li>
                             <li>
-                                <a href="{{url_for('mainPage3')}}">
+                                <a href="{{url_for('mainPage')}}">
                                     <span>
                                             <i class="material-icons">grain</i>
                                             <span class="icon-text">Clusters</span>
@@ -95,12 +98,12 @@
                         </a>
                         <ul class="collapse list-unstyled" id="storageSubmenu">
                             <li>
-                                <a href="{{url_for('mainPage')}}">
+                                <!-- <a href="{{url_for('mainPage')}}">
                                     <span>
                                         <i class="material-icons">widgets</i>
                                         <span class="icon-text">Load</span>
                                     </span>  
-                                </a>
+                                </a> -->
                             </li>
                             <li>
                                 <a href="/downloadExport">
@@ -121,7 +124,7 @@
 
                         </ul>
                     </li>
-                    <li>
+                    <!-- <li>
                         <a href="#">
                             <span>
                                 <i class="material-icons">settings</i>
@@ -144,7 +147,7 @@
                                     <span class="icon-text">About</span>
                             </span>          
                         </a>
-                    </li>
+                    </li> -->
                 </ul>
             </nav>
                 <!-- SideBar Toggle Btn -->
@@ -178,7 +181,7 @@
                         </span> 
                     </a>
                 </li>
-                <li class="nav-item">
+                <!-- <li class="nav-item">
                     <a class="nav-link active" href="#!" >
                         <span>
                             <i class="material-icons">undo</i>
@@ -191,7 +194,7 @@
                             <i class="material-icons">redo</i>
                         </span> 
                     </a>
-                </li>
+                </li> -->
                 <li class="nav-item">
                     <a id="navLinkFullscreen" class="nav-link active" href="#!">
                         <span>

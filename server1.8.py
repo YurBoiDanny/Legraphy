@@ -11,6 +11,11 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['EXPORT_FOLDER'] = EXPORT_FOLDER
 
+@app.route("/test")
+def test():
+
+    flash("this is a message")
+    return render_template("mainPageTemplates/test.html")
 
 @app.route("/")
 @app.route("/mainPage")
@@ -60,16 +65,6 @@ def downloadExport():
     print(filename)
     #return  send_file(filename, mimetype='text/csv',attachment_filename='exportOfGraphParameters.csv', as_attachment=True)
     return send_from_directory(directory=app.config['EXPORT_FOLDER'], filename="currentLinks.csv", as_attachment=True)
-
-
-@app.route("/development")
-def contextMenu():
-    return render_template("development/addRemoveNodesAndEdges2.html")
-
-
-@app.route("/mainPage(3)")
-def mainPage3():
-    return render_template("mainPageTemplates/mainPageV1.3.html")
 
 
 @app.route("/createCsvExport", methods=['POST'])

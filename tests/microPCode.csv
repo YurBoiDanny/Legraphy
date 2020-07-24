@@ -1,0 +1,77 @@
+source,target,edge
+main,initLCD,void
+main,configDebugLED,void
+main,configInterrupts,void
+main,configCCP,void
+main,configTimers,void
+main,errorCalibration,void
+main,homeScreen,void
+main,alarm,void
+main,checkPressedKey,void
+main,menu,option
+main,WriteCmdXLCD,0x01
+main,BusyXLCD,void
+main,resetTempConversion,void
+main,readTemp,void
+main,obtainInteger,void
+main,approximation,temp_fraction
+main,runningAverage,void
+main,obtainSign,void
+main,printPulse,void
+main,printHRV,void
+main,printTemp,void
+main,Delay10KTCYx,5
+configCCP,OpenCapture1,CAPTURE_INT_ON & C1_EVERY_RISE_EDGE
+configTimers,OpenTimer0,TIMER_INT_ON & T0_16BIT & T0_SOURCE_INT & T0_PS_1_256
+errorCalibration,configTemp,void
+configTemp,ow_write_byte, (0xCC, 0x4E, 0x00, 0x00, 0x5F)
+configTemp,ow_reset,void
+errorCalibration,obtainInteger,void
+errorCalibration,obtainFraction,void
+errorCalibration,approximation,temp_fraction
+errorCalibration,resetTempConversion,void
+errorCalibration,WriteCmdXLCD,0x01
+errorCalibration,sprintf,lcdVariable; "Time: %d"; counter
+errorCalibration,putsXLCD,lcdVariable
+errorCalibration,BusyXLCD,void,
+homeScreen,WriteCmdXLCD,0x01
+homeScreen,BusyXLCD,void
+homeScreen,SetDDRamAddr,0x00;0x40;0x10
+homeScreen,putrsXLCD,"Please choose: ";"1.Measurement";"2.Storage"
+readTemp,ow_reset,void
+readTemp,ow_write_byte,0xCC,0xBE
+readTemp,Delay10KTCYx,40
+obtainSign,sprintf,"Temp:+%d.%d%cC";"Temp:+%d.%d%cC"
+printPulse,SetDDRamAddr,0x00
+printPulse,sprintf,"Heartbeat:%d"
+printPulse,BusyXLCD,void
+printHRV,SetDDRamAddr,0x40
+printHRV,BusyXLCD,void
+printHRV,sprintf,"HRV:%d%"
+printHRV,putsXLCD,hrvVariable
+printTemp,SetDDRamAddr,0x10
+printTemp,BusyXLCD,void
+printTemp,putsXLCD,tempVariable
+menu,homeScreen,void
+menu,stopPulseInterval,void
+menu,putrsXLCD,"Storing...";"Measuring..."
+menu,BusyXLCD,void
+menu,WriteCmdXLCD,0x01
+menu,resetVariables,void
+menu,startTimer1,void
+menu,startPulseInterval,void
+startPulseInterval,WriteTimer0,0x6769
+high_interrupt_vector,highISR,void
+initLCD,OpenXLCD,FOUR_BIT & LINES_5X7
+initLCD,BusyXLCD,void
+initLCD,WriteCmdXLCD,SHIFT_DISP_LEFT;DON & BLINK_OFF
+highISR,stopPulseInterval,void
+highISR,startPulseInterval,void
+highISR,HRVMeasurement,void
+HRVMeasurement,resetVariables,void
+resetVariable,WriterTimer1,0x00
+highISR,checkRange,void
+highISR,checkBrownout,void
+highISR,readCurrentCount,void
+highISR,resetTimer1,void
+lower_interrupt_vector,lowISR,void
